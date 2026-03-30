@@ -1,0 +1,15 @@
+# Clone your repo
+git clone https://github.com/karmy22/karmy-pet-shop.git
+cd karmy-pet-shop
+
+# Create folders
+mkdir -p frontend/src/components
+mkdir -p backend/routes
+
+# Create files and add content
+# (Copy files from my examples into these folders)
+
+# Push to GitHub
+git add .
+git commit -m "Add complete Karmy Pet Shop application"
+git push origin main
