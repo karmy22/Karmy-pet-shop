@@ -1,4 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import Navbar from '../components/navbar';
+import SiteFooter from '../components/siteFooter';
+import { getFeaturedProducts } from '../data/catalog';
+import { getVisibleSeasonalCollections, STORE_SPECIES } from '../data/navigation';
 
 const BASES = [
   {
@@ -64,13 +69,27 @@ function calcTotal(base, addons) {
   return base.price + extraAddons * 12.99;
 }
 
-const LOGO_PATH = '/logo.png';
 const SHIPPING_COST = 0;
 
 export default function Home() {
+  const location = useLocation();
+  const fullLogoPath = '/karmy-logo-full.png';
   const [step, setStep] = useState(1);
   const [selectedBase, setSelectedBase] = useState(null);
   const [selectedAddons, setSelectedAddons] = useState([]);
+  const featuredProducts = getFeaturedProducts(4);
+  const seasonalCollections = getVisibleSeasonalCollections();
+
+  useEffect(() => {
+    if (location.pathname === '/build-your-kit') {
+      window.requestAnimationFrame(() => {
+        const builder = document.getElementById('builder');
+        if (builder) {
+          builder.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }
+  }, [location.pathname]);
 
   const toggleAddon = (addon) => {
     setSelectedAddons((prev) =>
@@ -163,51 +182,69 @@ export default function Home() {
         .strikethrough { text-decoration: line-through; color: var(--mid); font-size: .85rem; }
         .free-tag { color: var(--warm-strong); font-weight: 700; font-size: .9rem; }
         .summary-card { background: var(--surface); border-radius: 20px; padding: 28px; border: 1.5px solid var(--mist); }
-        .brand-logo { width: 54px; height: 54px; object-fit: contain; border-radius: 12px; background: var(--surface); border: 1px solid var(--mist); }
-        .hero-logo { width: min(240px, 45vw); height: auto; display: block; margin-bottom: 20px; filter: drop-shadow(0 12px 22px rgba(74,124,138,.17)); }
+        .brand-lockup { width: clamp(136px, 18vw, 170px); height: auto; display: block; filter: drop-shadow(0 10px 18px rgba(74,124,138,.12)); }
+        .hero-logo { width: min(300px, 58vw); height: auto; display: block; margin-bottom: 20px; filter: drop-shadow(0 12px 22px rgba(74,124,138,.17)); }
+        .footer-mark { width: 62px; height: 62px; display: block; }
         .hero-surface { border-radius: 26px; border: 1px solid var(--mist); background: linear-gradient(160deg, rgba(255,255,255,.75), rgba(249,247,239,.9)); box-shadow: 0 16px 42px rgba(74,124,138,.13); padding: 36px; }
         .section-soft { background: transparent; }
+        .store-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+        .store-entry-card {
+          background: rgba(255,255,255,.84);
+          border: 1px solid var(--mist);
+          border-radius: 24px;
+          padding: 24px;
+          text-decoration: none;
+          color: var(--ink);
+          box-shadow: 0 14px 34px rgba(74,124,138,.08);
+          transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+          display: block;
+        }
+        .store-entry-card:hover { transform: translateY(-4px); box-shadow: 0 18px 38px rgba(74,124,138,.13); border-color: var(--teal); }
+        .store-entry-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; margin-bottom: 10px; }
+        .store-entry-card p { color: var(--mid); line-height: 1.7; font-size: .94rem; margin-bottom: 18px; }
+        .store-mini-links { display: flex; flex-wrap: wrap; gap: 8px; }
+        .store-mini-chip {
+          display: inline-flex;
+          align-items: center;
+          padding: 7px 10px;
+          border-radius: 999px;
+          background: rgba(74,124,138,.08);
+          color: var(--ink);
+          font-size: .76rem;
+          font-weight: 700;
+        }
+        .featured-product-card {
+          background: rgba(255,255,255,.88);
+          border: 1px solid var(--mist);
+          border-radius: 22px;
+          padding: 22px;
+          box-shadow: 0 12px 30px rgba(74,124,138,.08);
+        }
+        .featured-product-card p { color: var(--mid); line-height: 1.6; font-size: .92rem; min-height: 68px; }
+        .seasonal-banner {
+          background: linear-gradient(145deg, rgba(244,194,145,.35), rgba(255,255,255,.8));
+          border: 1px solid var(--mist);
+          border-radius: 24px;
+          padding: 24px;
+        }
         .trust-row { background: linear-gradient(180deg, rgba(74,124,138,.1), rgba(74,124,138,.04)); border-top: 1px solid var(--mist); border-bottom: 1px solid var(--mist); }
         .site-footer { background: var(--surface-soft); border-top: 1px solid var(--mist); }
         @media (max-width: 700px) {
           .two-col { grid-template-columns: 1fr !important; }
           .addon-grid { grid-template-columns: 1fr 1fr !important; }
           .hero-surface { padding: 24px 18px; }
-          .brand-text { display: none; }
+          .brand-lockup { width: 122px; }
+          .hero-logo { width: min(250px, 72vw); }
         }
       `}</style>
 
-      <nav style={{ background: 'rgba(249,247,239,.94)', backdropFilter: 'blur(4px)', borderBottom: '1px solid var(--mist)', padding: '8px 6%', minHeight: 74, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 100 }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img className="brand-logo" src={LOGO_PATH} alt="Karmy Pet Shop logo" onError={(event) => { event.currentTarget.style.display = 'none'; }} />
-          <span className="brand-text" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.7rem', fontWeight: 700, color: 'var(--ink)', letterSpacing: '-.01em' }}>
-            Kar<span style={{ color: 'var(--terracotta)' }}>my</span>
-          </span>
-        </span>
-        <div style={{ display: 'flex', gap: 28 }}>
-          {['Shop', 'Build Your Kit', 'About', 'FAQ'].map((l) => (
-            <span
-              key={l}
-              style={{ color: 'var(--mid)', fontSize: '.85rem', fontWeight: 600, cursor: 'pointer', transition: 'color .2s' }}
-              onMouseEnter={(e) => {
-                e.target.style.color = 'var(--ink)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.color = 'var(--mid)';
-              }}
-            >
-              {l}
-            </span>
-          ))}
-        </div>
-        <div style={{ background: 'var(--ink)', borderRadius: 8, padding: '8px 18px', fontSize: '.85rem', fontWeight: 700, cursor: 'pointer', color: 'var(--white)' }}>Cart (0)</div>
-      </nav>
+      <Navbar />
 
       <section style={{ background: 'transparent', padding: '52px 6% 56px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', right: -80, top: -80, width: 480, height: 480, borderRadius: '50%', background: 'rgba(232,155,95,.11)' }} />
         <div style={{ position: 'absolute', right: 80, bottom: -120, width: 300, height: 300, borderRadius: '50%', background: 'rgba(74,124,138,.09)' }} />
         <div className="hero-surface" style={{ maxWidth: 900, margin: '0 auto', position: 'relative' }}>
-          <img className="hero-logo fade-up" src={LOGO_PATH} alt="Karmy Pet Shop logo" onError={(event) => { event.currentTarget.style.display = 'none'; }} />
+          <img className="hero-logo fade-up" src={fullLogoPath} alt="Karmy Pet Shop logo" onError={(event) => { event.currentTarget.style.display = 'none'; }} />
           <div className="pill fade-up" style={{ marginBottom: 20 }}>Clip &amp; Go System</div>
           <h1 className="fade-up-2" style={{ fontFamily: "'Cormorant Garamond', serif", color: 'var(--ink)', fontSize: 'clamp(2.6rem, 6vw, 4.5rem)', fontWeight: 700, lineHeight: 1.05, marginBottom: 20 }}>
             Build the kit
@@ -228,6 +265,9 @@ export default function Home() {
             >
               Start Building →
             </button>
+            <Link className="btn-ghost" to="/shop/dog/harnesses" style={{ textDecoration: 'none' }}>
+              Shop Dog Gear
+            </Link>
             <div style={{ display: 'flex', gap: 20, marginLeft: 8 }}>
               {['Harness from $54.99', 'Leash from $24.99', 'Add-ons $12.99'].map((txt) => (
                 <div key={txt} style={{ color: 'var(--mid)', fontSize: '.82rem', display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -235,6 +275,100 @@ export default function Home() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: '0 6% 56px' }}>
+        <div style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 20, flexWrap: 'wrap', marginBottom: 24 }}>
+            <div>
+              <div style={{ marginBottom: 10, color: 'var(--terracotta)', fontSize: '.78rem', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase' }}>Storefront</div>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2rem, 4vw, 3.3rem)', margin: 0 }}>Shop by species</h2>
+            </div>
+            <p style={{ maxWidth: 500, color: 'var(--mid)', lineHeight: 1.7, margin: 0 }}>
+              The main menu now supports dedicated dog and cat assortments, with category pages for clothes, harnesses, leashes, toys, gadgets, beds, training pads, trees, and hiking gear.
+            </p>
+          </div>
+
+          <div className="store-card-grid">
+            {STORE_SPECIES.map((species) => (
+              <Link key={species.slug} className="store-entry-card" to={`/shop/${species.slug}/${species.categories[0].slug}`}>
+                <div className="pill" style={{ marginBottom: 16 }}>{species.shortLabel}</div>
+                <h3>{species.label}</h3>
+                <p>{species.description}</p>
+                <div className="store-mini-links">
+                  {species.categories.filter((category) => category.visible).slice(0, 4).map((category) => (
+                    <span key={category.slug} className="store-mini-chip">{category.label}</span>
+                  ))}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: '0 6% 56px' }}>
+        <div style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.1fr .9fr', gap: 18 }} className="two-col">
+            <div className="seasonal-banner">
+              <div style={{ marginBottom: 10, color: 'var(--terracotta)', fontSize: '.78rem', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase' }}>Seasonal control</div>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.8rem, 4vw, 3rem)', marginBottom: 12 }}>
+                Seasonal pages can be switched on and off.
+              </h2>
+              <p style={{ color: 'var(--mid)', lineHeight: 1.7, marginBottom: 18 }}>
+                Active collections are already routed. Hidden ones stay in the data model until you decide to publish them.
+              </p>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {seasonalCollections.map((collection) => (
+                  <Link key={collection.slug} to={`/seasonal/${collection.slug}`} className="store-mini-chip" style={{ textDecoration: 'none' }}>
+                    {collection.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="store-entry-card" style={{ background: 'rgba(255,252,244,.92)' }}>
+              <div className="pill pill-green" style={{ marginBottom: 16 }}>Builder</div>
+              <h3>Keep the custom kit flow</h3>
+              <p>
+                The storefront now supports shopping pages, but the existing harness-and-leash builder remains part of the homepage so you can keep selling configurable kits alongside catalog products.
+              </p>
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  const builder = document.getElementById('builder');
+                  if (builder) builder.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                Jump to Builder →
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: '0 6% 56px' }}>
+        <div style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 20, flexWrap: 'wrap', marginBottom: 24 }}>
+            <div>
+              <div style={{ marginBottom: 10, color: 'var(--terracotta)', fontSize: '.78rem', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase' }}>Featured assortment</div>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2rem, 4vw, 3.3rem)', margin: 0 }}>What shoppers can browse now</h2>
+            </div>
+          </div>
+
+          <div className="store-card-grid">
+            {featuredProducts.map((product) => (
+              <Link key={product.id} to={`/shop/${product.species}/${product.category}`} className="featured-product-card" style={{ textDecoration: 'none' }}>
+                <div className="pill" style={{ marginBottom: 14 }}>{product.badge}</div>
+                <h3 style={{ fontSize: '1.25rem', marginBottom: 8 }}>{product.name}</h3>
+                <p>{product.description}</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 18 }}>
+                  <strong style={{ fontSize: '1.15rem' }}>${product.price.toFixed(2)}</strong>
+                  <span style={{ color: 'var(--mid)', fontSize: '.82rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em' }}>{product.species}</span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -515,21 +649,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="site-footer" style={{ padding: '28px 6%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img className="brand-logo" src={LOGO_PATH} alt="Karmy Pet Shop logo" onError={(event) => { event.currentTarget.style.display = 'none'; }} />
-          <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.4rem', fontWeight: 700, color: 'var(--ink)' }}>
-          Kar
-          <span style={{ color: 'var(--terracotta)' }}>my</span>
-          </span>
-        </span>
-        <span style={{ color: 'var(--mid)', fontSize: '.8rem' }}>© 2026 Karmy. All rights reserved.</span>
-        <div style={{ display: 'flex', gap: 20 }}>
-          {['Privacy', 'Terms', 'Contact'].map((l) => (
-            <span key={l} style={{ color: 'var(--mid)', fontSize: '.8rem', cursor: 'pointer' }}>{l}</span>
-          ))}
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

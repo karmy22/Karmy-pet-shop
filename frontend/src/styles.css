@@ -1,8 +1,23 @@
 :root {
   --bg-cream: #fdfaf3;
   --bg-mint: #dff4e9;
+  --teal: #4a7c8a;
+  --terracotta: #e89b5f;
+  --peach: #f4c291;
+  --cream: #f9f7ef;
   --ink: #13231a;
   --ink-soft: #355344;
+  --mid: #6e8890;
+  --mist: #e6e1d3;
+  --surface: #fffcf4;
+  --surface-soft: #f6f1e4;
+  --ink-strong: #396570;
+  --warm-strong: #c9712f;
+  --warm-soft: #ffecd9;
+  --warm-surface: #fff1e4;
+  --warm-border: #f1c9a5;
+  --warm-empty: #d8a67a;
+  --white: #ffffff;
   --accent: #ea6a2f;
   --accent-strong: #d54e13;
   --card: #fff8ea;
@@ -15,13 +30,21 @@
 
 body {
   margin: 0;
-  font-family: 'Nunito Sans', 'Segoe UI', sans-serif;
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
   color: var(--ink);
   background:
     radial-gradient(circle at 12% 10%, #ffd9ae 0, rgba(255, 217, 174, 0) 33%),
     radial-gradient(circle at 85% 12%, #c2f1da 0, rgba(194, 241, 218, 0) 29%),
     linear-gradient(145deg, var(--bg-cream), #f7fef9 40%, var(--bg-mint));
   min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
 }
 
 .site-shell {
