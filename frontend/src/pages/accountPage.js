@@ -42,10 +42,8 @@ export default function AccountPage() {
   }, [user]);
 
   const snapshot = useMemo(() => {
-    const totalSpend = orders.reduce((sum, order) => sum + order.total, 0);
     return {
       ordersPlaced: orders.length,
-      totalSpend,
       latestOrder: orders[0] || null,
     };
   }, [orders]);
@@ -58,7 +56,6 @@ export default function AccountPage() {
     >
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 18 }}>
         <InfoCard label="Orders placed" value={String(snapshot.ordersPlaced)} />
-        <InfoCard label="Total spend" value={`$${snapshot.totalSpend.toFixed(2)}`} />
         <InfoCard
           label="Latest status"
           value={snapshot.latestOrder ? capitalize(snapshot.latestOrder.status) : 'No orders yet'}
