@@ -9,10 +9,8 @@ const BASES = [
     price: 54.99,
     freeSlots: 2,
     addonValue: 12.99,
-    color: '#1A1A2E',
     badge: 'Best Value',
     desc: 'Adjustable mesh harness with 4 D-ring clip points. Includes 2 accessories of your choice - free.',
-    emoji: '🦺',
   },
   {
     id: 'harness-l',
@@ -22,10 +20,8 @@ const BASES = [
     price: 59.99,
     freeSlots: 2,
     addonValue: 12.99,
-    color: '#1A1A2E',
     badge: 'Best Value',
     desc: 'Heavy-duty harness with padded chest plate and 4 clip points. Includes 2 accessories free.',
-    emoji: '🦺',
   },
   {
     id: 'leash-std',
@@ -35,10 +31,8 @@ const BASES = [
     price: 24.99,
     freeSlots: 0,
     addonValue: 0,
-    color: '#2D2D2D',
     badge: null,
     desc: 'Durable nylon bungee leash with 3 clip attachment loops. Add accessories at checkout.',
-    emoji: '🔗',
   },
   {
     id: 'leash-long',
@@ -48,22 +42,20 @@ const BASES = [
     price: 29.99,
     freeSlots: 0,
     addonValue: 0,
-    color: '#2D2D2D',
     badge: null,
     desc: 'Extended training leash with 5 clip loops. Perfect for parks and trails.',
-    emoji: '🔗',
   },
 ];
 
 const ADDONS = [
-  { id: 'light', name: 'SafeBeam LED', price: 12.99, emoji: '💡', desc: '360° clip-on safety light' },
-  { id: 'treat', name: 'TreatPod', price: 12.99, emoji: '🦴', desc: 'Magnetic snap treat capsule' },
-  { id: 'water', name: 'HydroClip Bottle', price: 12.99, emoji: '💧', desc: 'Collapsible 10oz water bottle' },
-  { id: 'bag', name: 'BagDispenser', price: 12.99, emoji: '🗑️', desc: 'Built-in waste bag holder' },
-  { id: 'tag', name: 'SmartTag Clip', price: 12.99, emoji: '🏷️', desc: 'ID + AirTag compatible slot' },
-  { id: 'bell', name: 'TrailBell', price: 12.99, emoji: '🔔', desc: 'Bear bell for mountain hikes' },
-  { id: 'mirror', name: 'PocketBag Mini', price: 12.99, emoji: '👜', desc: 'Zip pouch for keys & cards' },
-  { id: 'reflector', name: 'ReflectBand', price: 12.99, emoji: '🌟', desc: 'Reflective high-vis strap' },
+  { id: 'light', name: 'SafeBeam LED', price: 12.99, desc: '360° clip-on safety light' },
+  { id: 'treat', name: 'TreatPod', price: 12.99, desc: 'Magnetic snap treat capsule' },
+  { id: 'water', name: 'HydroClip Bottle', price: 12.99, desc: 'Collapsible 10oz water bottle' },
+  { id: 'bag', name: 'BagDispenser', price: 12.99, desc: 'Built-in waste bag holder' },
+  { id: 'tag', name: 'SmartTag Clip', price: 12.99, desc: 'ID + AirTag compatible slot' },
+  { id: 'bell', name: 'TrailBell', price: 12.99, desc: 'Bear bell for mountain hikes' },
+  { id: 'mirror', name: 'PocketBag Mini', price: 12.99, desc: 'Zip pouch for keys & cards' },
+  { id: 'reflector', name: 'ReflectBand', price: 12.99, desc: 'Reflective high-vis strap' },
 ];
 
 function calcTotal(base, addons) {
@@ -216,7 +208,7 @@ export default function Home() {
         <div style={{ position: 'absolute', right: 80, bottom: -120, width: 300, height: 300, borderRadius: '50%', background: 'rgba(74,124,138,.09)' }} />
         <div className="hero-surface" style={{ maxWidth: 900, margin: '0 auto', position: 'relative' }}>
           <img className="hero-logo fade-up" src={LOGO_PATH} alt="Karmy Pet Shop logo" onError={(event) => { event.currentTarget.style.display = 'none'; }} />
-          <div className="pill fade-up" style={{ marginBottom: 20 }}>🐾 Clip &amp; Go System</div>
+          <div className="pill fade-up" style={{ marginBottom: 20 }}>Clip &amp; Go System</div>
           <h1 className="fade-up-2" style={{ fontFamily: "'Cormorant Garamond', serif", color: 'var(--ink)', fontSize: 'clamp(2.6rem, 6vw, 4.5rem)', fontWeight: 700, lineHeight: 1.05, marginBottom: 20 }}>
             Build the kit
             <br />
@@ -237,9 +229,8 @@ export default function Home() {
               Start Building →
             </button>
             <div style={{ display: 'flex', gap: 20, marginLeft: 8 }}>
-              {[['🦺', 'Harness from $54.99'], ['🔗', 'Leash from $24.99'], ['➕', 'Add-ons $12.99']].map(([ico, txt]) => (
+              {['Harness from $54.99', 'Leash from $24.99', 'Add-ons $12.99'].map((txt) => (
                 <div key={txt} style={{ color: 'var(--mid)', fontSize: '.82rem', display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <span>{ico}</span>
                   {txt}
                 </div>
               ))}
@@ -296,7 +287,7 @@ export default function Home() {
                 {BASES.filter((b) => b.type === 'harness').map((b) => (
                   <div key={b.id} className={`base-card ${selectedBase?.id === b.id ? 'selected' : ''}`} onClick={() => setSelectedBase(b)}>
                     {b.badge && <div className="pill" style={{ position: 'absolute', top: 16, right: 16, fontSize: '.65rem' }}>{b.badge}</div>}
-                    <div style={{ fontSize: '2.4rem', marginBottom: 12 }}>{b.emoji}</div>
+                    <div style={{ fontSize: '.72rem', letterSpacing: '.08em', fontWeight: 700, color: 'var(--mid)', marginBottom: 12, textTransform: 'uppercase' }}>{b.type}</div>
                     <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: 2 }}>{b.name}</div>
                     <div style={{ color: 'var(--mid)', fontSize: '.85rem', marginBottom: 12 }}>Size: {b.size}</div>
                     <p style={{ color: 'var(--mid)', fontSize: '.88rem', lineHeight: 1.5, marginBottom: 16 }}>{b.desc}</p>
@@ -317,7 +308,7 @@ export default function Home() {
               <div className="two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 {BASES.filter((b) => b.type === 'leash').map((b) => (
                   <div key={b.id} className={`base-card ${selectedBase?.id === b.id ? 'selected' : ''}`} onClick={() => setSelectedBase(b)}>
-                    <div style={{ fontSize: '2.4rem', marginBottom: 12 }}>{b.emoji}</div>
+                    <div style={{ fontSize: '.72rem', letterSpacing: '.08em', fontWeight: 700, color: 'var(--mid)', marginBottom: 12, textTransform: 'uppercase' }}>{b.type}</div>
                     <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: 2 }}>{b.name}</div>
                     <div style={{ color: 'var(--mid)', fontSize: '.85rem', marginBottom: 12 }}>Length: {b.size}</div>
                     <p style={{ color: 'var(--mid)', fontSize: '.88rem', lineHeight: 1.5, marginBottom: 16 }}>{b.desc}</p>
@@ -362,7 +353,6 @@ export default function Home() {
                     {isFree && (
                       <div style={{ position: 'absolute', top: 10, right: 10, background: 'var(--warm-strong)', color: 'white', fontSize: '.6rem', fontWeight: 700, padding: '2px 7px', borderRadius: 20, letterSpacing: '.05em' }}>FREE</div>
                     )}
-                    <span style={{ fontSize: '1.8rem', marginBottom: 8 }}>{addon.emoji}</span>
                     <div style={{ fontWeight: 700, fontSize: '.9rem', marginBottom: 2, color: isSelected ? 'white' : 'var(--ink)' }}>{addon.name}</div>
                     <div style={{ fontSize: '.78rem', color: isSelected ? 'rgba(255,255,255,.6)' : 'var(--mid)', marginBottom: 8 }}>{addon.desc}</div>
                     <div style={{ fontWeight: 700, fontSize: '.9rem', color: isFree ? 'var(--warm-strong)' : isSelected ? 'white' : 'var(--ink)' }}>
@@ -390,7 +380,6 @@ export default function Home() {
                       {a
                         ? (
                           <>
-                            <span>{a.emoji}</span>
                             <span style={{ fontWeight: 600, color: 'var(--warm-strong)' }}>{a.name}</span>
                           </>
                         )
@@ -422,7 +411,6 @@ export default function Home() {
 
                 <div className="price-row">
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ fontSize: '1.4rem' }}>{selectedBase.emoji}</span>
                     <div>
                       <div style={{ fontWeight: 700 }}>{selectedBase.name}</div>
                       <div style={{ color: 'var(--mid)', fontSize: '.8rem' }}>Size: {selectedBase.size}</div>
@@ -439,7 +427,6 @@ export default function Home() {
                       return (
                         <div key={addon.id} className="price-row">
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span>{addon.emoji}</span>
                             <span style={{ fontWeight: 500 }}>{addon.name}</span>
                             {isFree && <span className="pill pill-green" style={{ fontSize: '.62rem', padding: '2px 8px' }}>FREE</span>}
                           </div>
@@ -460,14 +447,13 @@ export default function Home() {
 
                 {savings > 0 && (
                   <div style={{ background: 'var(--warm-surface)', borderRadius: 10, padding: '12px 16px', margin: '16px 0', display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: 'var(--warm-strong)', fontWeight: 600, fontSize: '.9rem' }}>🎉 You saved</span>
+                    <span style={{ color: 'var(--warm-strong)', fontWeight: 600, fontSize: '.9rem' }}>You saved</span>
                     <span style={{ color: 'var(--warm-strong)', fontWeight: 800 }}>-${savings.toFixed(2)}</span>
                   </div>
                 )}
 
                 <div className="price-row">
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ fontSize: '1.2rem' }}>🚚</span>
                     <span style={{ fontWeight: 700 }}>Shipping</span>
                   </div>
                   <span className="free-tag">Included</span>
@@ -484,16 +470,12 @@ export default function Home() {
                   <h3 style={{ fontWeight: 700, fontSize: '.85rem', textTransform: 'uppercase', letterSpacing: '.08em', color: 'var(--mid)', marginBottom: 16 }}>Kit Summary</h3>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--ink)', color: 'white', borderRadius: 10, padding: '8px 12px', fontSize: '.85rem', fontWeight: 600 }}>
-                      {selectedBase.emoji}
-                      {' '}
                       {selectedBase.name}
                       {' '}
                       {selectedBase.size}
                     </div>
                     {selectedAddons.map((a) => (
                       <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'var(--mist)', borderRadius: 10, padding: '8px 12px', fontSize: '.85rem' }}>
-                        {a.emoji}
-                        {' '}
                         {a.name}
                       </div>
                     ))}
@@ -511,9 +493,8 @@ export default function Home() {
                 </div>
 
                 <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {[['🚚', 'Shipping included on every kit'], ['🔄', '30-day returns - no questions'], ['✅', 'Vet-approved materials']].map(([ico, txt]) => (
+                  {['Shipping included on every kit', '30-day returns - no questions', 'Vet-approved materials'].map((txt) => (
                     <div key={txt} style={{ display: 'flex', gap: 8, alignItems: 'center', color: 'var(--mid)', fontSize: '.82rem' }}>
-                      <span>{ico}</span>
                       {txt}
                     </div>
                   ))}
@@ -526,9 +507,8 @@ export default function Home() {
 
       <section className="trust-row" style={{ padding: '36px 6%' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 24 }}>
-          {[['⚡', 'Ships in 1-3 days'], ['🐾', 'Vet approved'], ['🔒', 'Secure checkout'], ['💬', 'Real support']].map(([ico, txt]) => (
+          {['Ships in 1-3 days', 'Vet approved', 'Secure checkout', 'Real support'].map((txt) => (
             <div key={txt} style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ink)', fontSize: '.88rem' }}>
-              <span style={{ fontSize: '1.1rem' }}>{ico}</span>
               {txt}
             </div>
           ))}
