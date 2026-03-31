@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getVisibleSeasonalCollections, STORE_SPECIES } from '../data/navigation';
+import { getVisibleSeasonalCollections, STORE_SPECIES, getVisibleSpecies } from '../data/navigation';
 import { useAuth } from '../context/authContext';
 import { useCart } from '../context/cartContext';
 import { fetchProducts } from '../api/catalogApi';
@@ -101,7 +101,7 @@ function Navbar() {
 
   const speciesMenus = useMemo(
     () =>
-      STORE_SPECIES.map((species) => ({
+      getVisibleSpecies().map((species) => ({
         key: species.slug,
         label: species.label,
         description: species.description,

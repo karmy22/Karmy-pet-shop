@@ -21,7 +21,7 @@ const categorySchema = new mongoose.Schema(
     },
     species: {
       type: String,
-      enum: ['dog', 'cat', 'both'],
+      enum: ['dog', 'cat', 'bird', 'fish', 'small-animals', 'reptile', 'both'],
       required: true,
     },
     isActive: {

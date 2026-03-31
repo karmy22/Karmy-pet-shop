@@ -69,6 +69,11 @@ async function deleteCategory(request, response) {
   return response.status(204).send();
 }
 
+async function listCategories(request, response) {
+  const categories = await Category.find().sort({ name: 1 });
+  return response.json({ categories });
+}
+
 async function createProduct(request, response) {
   const payload = getProductPayload(request.body);
   const categoryExists = await Category.exists({ _id: payload.category });
@@ -103,6 +108,13 @@ async function deleteProduct(request, response) {
   return response.status(204).send();
 }
 
+async function listProducts(request, response) {
+  const products = await Product.find()
+    .populate('category', 'name slug')
+    .sort({ createdAt: -1 });
+  return response.json({ products });
+}
+
 async function listOrders(request, response) {
   const orders = await Order.find().sort({ createdAt: -1 }).limit(200);
   return response.json({ orders });
@@ -127,13 +139,71 @@ async function updateOrderStatus(request, response) {
   return response.json({ order });
 }
 
+async function toggleProductVisibility(request, response) {
+  const isActive = Boolean(request.body.isActive);
+  const product = await Product.findByIdAndUpdate(
+    request.params.id,
+    { isActive },
+    { new: true }
+  ).populate('category', 'name slug');
+  if (!product) {
+    return response.status(404).json({ error: 'Product not found' });
+  }
+  return response.json({ product });
+}
+
+async function toggleCategoryVisibility(request, response) {
+  const isActive = Boolean(request.body.isActive);
+  const category = await Category.findByIdAndUpdate(
+    request.params.id,
+    { isActive },
+    { new: true }
+  );
+  if (!category) {
+    return response.status(404).json({ error: 'Category not found' });
+  }
+  return response.json({ category });
+}
+
+async function updateShipmentDetails(request, response) {
+  const { carrier, trackingNumber, shipmentStatus, estimatedDelivery } = request.body;
+  const allowed = ['not_shipped', 'in_transit', 'delivered', 'exception'];
+  if (shipmentStatus && !allowed.includes(shipmentStatus)) {
+    return response.status(400).json({ error: 'Invalid shipment status' });
+  }
+
+  const update = {
+    'shipment.carrier': String(carrier || '').trim(),
+    'shipment.trackingNumber': String(trackingNumber || '').trim(),
+    'shipment.shipmentStatus': shipmentStatus || 'not_shipped',
+    'shipment.estimatedDelivery': estimatedDelivery || null,
+  };
+
+  const order = await Order.findByIdAndUpdate(
+    request.params.id,
+    update,
+    { new: true, runValidators: true }
+  );
+
+  if (!order) {
+    return response.status(404).json({ error: 'Order not found' });
+  }
+
+  return response.json({ order });
+}
+
 module.exports = {
   createCategory,
   updateCategory,
   deleteCategory,
+  listCategories,
+  toggleCategoryVisibility,
   createProduct,
   updateProduct,
   deleteProduct,
+  listProducts,
+  toggleProductVisibility,
   listOrders,
   updateOrderStatus,
+  updateShipmentDetails,
 };

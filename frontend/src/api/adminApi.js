@@ -33,6 +33,21 @@ export function deleteCategory(id, token) {
   });
 }
 
+export function listCategories(token) {
+  return apiRequest('/api/admin/categories', {
+    method: 'GET',
+    headers: withAuthHeaders(token),
+  });
+}
+
+export function toggleCategoryVisibility(id, isActive, token) {
+  return apiRequest(`/api/admin/categories/${id}/visibility`, {
+    method: 'PATCH',
+    headers: withAuthHeaders(token),
+    body: JSON.stringify({ isActive }),
+  });
+}
+
 export function createProduct(payload, token) {
   return apiRequest('/api/admin/products', {
     method: 'POST',
@@ -56,6 +71,29 @@ export function deleteProduct(id, token) {
   });
 }
 
+export function listProducts(token) {
+  return apiRequest('/api/admin/products', {
+    method: 'GET',
+    headers: withAuthHeaders(token),
+  });
+}
+
+export function toggleProductVisibility(id, isActive, token) {
+  return apiRequest(`/api/admin/products/${id}/visibility`, {
+    method: 'PATCH',
+    headers: withAuthHeaders(token),
+    body: JSON.stringify({ isActive }),
+  });
+}
+
+export function toggleCategoryVisibility(id, isActive, token) {
+  return apiRequest(`/api/admin/categories/${id}/visibility`, {
+    method: 'PATCH',
+    headers: withAuthHeaders(token),
+    body: JSON.stringify({ isActive }),
+  });
+}
+
 export function listOrders(token) {
   return apiRequest('/api/admin/orders', {
     method: 'GET',
@@ -68,5 +106,13 @@ export function updateOrderStatus(id, status, token) {
     method: 'PATCH',
     headers: withAuthHeaders(token),
     body: JSON.stringify({ status }),
+  });
+}
+
+export function updateShipment(id, payload, token) {
+  return apiRequest(`/api/admin/orders/${id}/shipment`, {
+    method: 'PATCH',
+    headers: withAuthHeaders(token),
+    body: JSON.stringify(payload),
   });
 }

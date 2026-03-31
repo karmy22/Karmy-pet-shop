@@ -75,6 +75,16 @@ const orderSchema = new mongoose.Schema(
       default: '',
       trim: true,
     },
+    shipment: {
+      carrier: { type: String, default: '', trim: true },
+      trackingNumber: { type: String, default: '', trim: true },
+      shipmentStatus: {
+        type: String,
+        enum: ['not_shipped', 'in_transit', 'delivered', 'exception'],
+        default: 'not_shipped',
+      },
+      estimatedDelivery: { type: Date, default: null },
+    },
   },
   { timestamps: true }
 );
