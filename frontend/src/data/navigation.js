@@ -72,50 +72,6 @@ export const SEASONAL_COLLECTIONS = [
     isSeasonal: true,
     visible: true,
   },
-  {
-    slug: 'bird',
-    visible: false,
-    label: 'Shop Birds',
-    shortLabel: 'Birds',
-    description: 'Perches, toys, cages, and everyday essentials for birds.',
-    categories: [
-      { slug: 'toys', label: 'Toys', description: 'Foraging toys, swings, and enrichment.', visible: true },
-      { slug: 'accessories', label: 'Accessories', description: 'Perches, feeders, and bird-safe gear.', visible: true },
-    ],
-  },
-  {
-    slug: 'fish',
-    visible: false,
-    label: 'Shop Fish',
-    shortLabel: 'Fish',
-    description: 'Tanks, décor, and care essentials for freshwater and saltwater fish.',
-    categories: [
-      { slug: 'accessories', label: 'Accessories', description: 'Tank décor, plants, and care tools.', visible: true },
-      { slug: 'toys', label: 'Enrichment', description: 'Hideaways and habitat enrichment.', visible: true },
-    ],
-  },
-  {
-    slug: 'small-animals',
-    visible: false,
-    label: 'Shop Small Animals',
-    shortLabel: 'Small Animals',
-    description: 'Bedding, hideouts, and play gear for rabbits, guinea pigs, hamsters and more.',
-    categories: [
-      { slug: 'beds', label: 'Beds & Hideouts', description: 'Cozy dens, tunnels, and sleeping spots.', visible: true },
-      { slug: 'toys', label: 'Toys', description: 'Chew toys, tunnels, and enrichment.', visible: true },
-    ],
-  },
-  {
-    slug: 'reptile',
-    visible: false,
-    label: 'Shop Reptiles',
-    shortLabel: 'Reptiles',
-    description: 'Habitat, lighting, and care essentials for reptiles.',
-    categories: [
-      { slug: 'accessories', label: 'Habitat & Accessories', description: 'Hides, substrate, and décor.', visible: true },
-      { slug: 'gadgets', label: 'Lighting & Tech', description: 'Thermostats, UV lights, and smart habitat tools.', visible: true },
-    ],
-  },
 ];
 
 export function getSpeciesConfig(speciesSlug) {

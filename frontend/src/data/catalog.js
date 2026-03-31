@@ -3,8 +3,6 @@ import {
   fetchFeaturedProducts,
 } from '../api/catalogApi';
 
-export const PRODUCT_CATALOG = [];
-
 export function getProductsByCategory(speciesSlug, categorySlug) {
   return fetchProducts({ species: speciesSlug, categorySlug });
 }
