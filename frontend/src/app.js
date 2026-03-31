@@ -5,37 +5,10 @@ import CategoryPage from './pages/categoryPage';
 import SeasonalPage from './pages/seasonalPage';
 import InfoPage from './pages/infoPage';
 import LoginPage from './pages/loginPage';
+import CartPage from './pages/cartPage';
 import { AuthProvider } from './context/authContext';
-
-const aboutSections = [
-  {
-    heading: 'What Karmy is building',
-    body: 'Karmy is set up as a modern pet shop with category-driven shopping for dogs and cats, plus a build-your-kit flow for custom walk systems and trail-ready setups.',
-  },
-  {
-    heading: 'How the assortment is organized',
-    body: 'The storefront is structured around dogs, cats, and seasonal collections so you can expand or hide categories without rebuilding the whole navigation every time.',
-  },
-  {
-    heading: 'What comes next',
-    body: 'The current implementation is the first storefront slice. Product detail pages, cart state, checkout, and admin controls can be layered on top of this structure next.',
-  },
-];
-
-const faqSections = [
-  {
-    heading: 'Can seasonal pages be hidden?',
-    body: 'Yes. Each seasonal collection has a visible flag in the navigation data, so you can switch collections on or off without changing the page components.',
-  },
-  {
-    heading: 'Are dog and cat menus separate?',
-    body: 'Yes. Categories are defined per species so you can show different assortments for dogs and cats while keeping the same overall storefront layout.',
-  },
-  {
-    heading: 'Is the build-your-kit flow still available?',
-    body: 'Yes. The custom harness and leash builder remains on the site and is available from the main navigation as Build Your Kit.',
-  },
-];
+import { CartProvider } from './context/cartContext';
+import { aboutSections, faqSections, notFoundSections } from './data/siteContent';
 
 function App() {
   return (
@@ -71,16 +44,12 @@ function App() {
             <InfoPage
               title="Page not found"
               intro="That page is not available yet. Use the main store navigation to jump back into the active catalog sections."
-              sections={[
-                {
-                  heading: 'Available now',
-                  body: 'You can browse dog categories, cat categories, active seasonal collections, and the build-your-kit flow from the main navigation.',
-                },
-              ]}
+              sections={notFoundSections}
             />
           )}
         />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/cart" element={<CartPage />} />
       </Routes>
     </BrowserRouter>
   );
@@ -89,7 +58,9 @@ function App() {
 export default function AppWithAuth() {
   return (
     <AuthProvider>
-      <App />
+      <CartProvider>
+        <App />
+      </CartProvider>
     </AuthProvider>
   );
 }

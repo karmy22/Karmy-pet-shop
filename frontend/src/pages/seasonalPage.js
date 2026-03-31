@@ -2,10 +2,12 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Navbar from '../components/navbar';
 import SiteFooter from '../components/siteFooter';
+import { useCart } from '../context/cartContext';
 import { getSeasonalCollection } from '../data/navigation';
 import { getProductsBySeasonalCollection } from '../data/catalog';
 
 function SeasonalPage() {
+  const { addProduct } = useCart();
   const { collectionSlug } = useParams();
   const collection = getSeasonalCollection(collectionSlug);
 
@@ -47,7 +49,15 @@ function SeasonalPage() {
               <div style={{ display: 'inline-flex', padding: '4px 10px', borderRadius: 999, background: 'var(--warm-soft)', color: 'var(--warm-strong)', fontSize: '.72rem', fontWeight: 700, marginBottom: 14 }}>{product.badge}</div>
               <h2 style={{ margin: '0 0 8px', fontSize: '1.15rem' }}>{product.name}</h2>
               <p style={{ color: 'var(--mid)', lineHeight: 1.6, minHeight: 72 }}>{product.description}</p>
-              <strong style={{ fontSize: '1.2rem', display: 'block', marginTop: 18 }}>${product.price.toFixed(2)}</strong>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 18 }}>
+                <strong style={{ fontSize: '1.2rem' }}>${product.price.toFixed(2)}</strong>
+                <button
+                  style={{ border: 'none', borderRadius: 12, padding: '11px 16px', background: 'var(--ink)', color: 'white', fontWeight: 700, cursor: 'pointer' }}
+                  onClick={() => addProduct(product)}
+                >
+                  Add to Cart
+                </button>
+              </div>
             </article>
           )) : (
             <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,.78)', border: '1px dashed var(--mist)', borderRadius: 20, padding: 28 }}>

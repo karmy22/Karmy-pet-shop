@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -7,6 +7,7 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
+import Navbar from '../components/navbar';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -58,32 +59,10 @@ export default function LoginPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', flexDirection: 'column', fontFamily: "'DM Sans', sans-serif", color: 'var(--ink)' }}>
-      <style>{`
-        :root {
-          --teal: #4A7C8A; --terracotta: #E89B5F; --peach: #F4C291;
-          --cream: #F9F7EF; --ink: #4A7C8A; --mist: #E6E1D3;
-          --mid: #6E8890; --surface: #FFFCF4; --ink-strong: #396570;
-          --warm-strong: #C9712F; --warm-soft: #FFECD9; --white: #FFFFFF;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-      `}</style>
+      <Navbar />
 
-      {/* Nav bar */}
-      <nav style={{ background: 'rgba(249,247,239,.94)', backdropFilter: 'blur(4px)', borderBottom: '1px solid var(--mist)', padding: '14px 6%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img
-            src="/karmy-logo-mark.png"
-            alt="Karmy"
-            style={{ width: 100, height: 125, objectFit: 'contain', display: 'block' }}
-            onError={(e) => { e.currentTarget.style.display = 'none'; }}
-          />
-        </Link>
-      </nav>
-
-      {/* Card */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 6%' }}>
         <div style={{ width: '100%', maxWidth: 420, background: 'var(--white)', border: '1.5px solid var(--mist)', borderRadius: 24, padding: '40px 36px', boxShadow: '0 16px 42px rgba(74,124,138,.11)' }}>
-          {/* Toggle */}
           <div style={{ display: 'flex', background: 'var(--cream)', borderRadius: 12, padding: 4, marginBottom: 28 }}>
             {['login', 'register'].map((m) => (
               <button
@@ -110,7 +89,6 @@ export default function LoginPage() {
             {mode === 'login' ? 'Sign in to your account to continue.' : 'Create an account to start shopping.'}
           </p>
 
-          {/* Google */}
           <button
             onClick={handleGoogle}
             disabled={loading}
@@ -140,7 +118,6 @@ export default function LoginPage() {
             <div style={{ flex: 1, height: 1, background: 'var(--mist)' }} />
           </div>
 
-          {/* Email/password form */}
           <form onSubmit={handleEmailAuth} noValidate>
             {mode === 'register' && (
               <>

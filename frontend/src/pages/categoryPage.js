@@ -2,10 +2,12 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Navbar from '../components/navbar';
 import SiteFooter from '../components/siteFooter';
+import { useCart } from '../context/cartContext';
 import { getCategoryConfig, getSpeciesConfig, getVisibleCategories } from '../data/navigation';
 import { getProductsByCategory } from '../data/catalog';
 
 function CategoryPage() {
+  const { addProduct } = useCart();
   const { speciesSlug, categorySlug } = useParams();
   const species = getSpeciesConfig(speciesSlug);
   const category = getCategoryConfig(speciesSlug, categorySlug);
@@ -70,7 +72,12 @@ function CategoryPage() {
               <p style={{ color: 'var(--mid)', lineHeight: 1.6, minHeight: 72 }}>{product.description}</p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 18 }}>
                 <strong style={{ fontSize: '1.2rem' }}>${product.price.toFixed(2)}</strong>
-                <button style={{ border: 'none', borderRadius: 12, padding: '11px 16px', background: 'var(--ink)', color: 'white', fontWeight: 700, cursor: 'pointer' }}>View</button>
+                <button
+                  style={{ border: 'none', borderRadius: 12, padding: '11px 16px', background: 'var(--ink)', color: 'white', fontWeight: 700, cursor: 'pointer' }}
+                  onClick={() => addProduct(product)}
+                >
+                  Add to Cart
+                </button>
               </div>
             </article>
           )) : (
