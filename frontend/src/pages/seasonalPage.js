@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Navbar from '../components/navbar';
 import SiteFooter from '../components/siteFooter';
@@ -9,6 +9,8 @@ import { getProductsBySeasonalCollection } from '../data/catalog';
 function SeasonalPage() {
   const { addProduct } = useCart();
   const { collectionSlug } = useParams();
+  const [products, setProducts] = useState([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const collection = getSeasonalCollection(collectionSlug);
 
   if (!collection) {
@@ -24,13 +26,38 @@ function SeasonalPage() {
     );
   }
 
-  const products = getProductsBySeasonalCollection(collectionSlug);
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadProducts() {
+      setIsLoadingProducts(true);
+      try {
+        const nextProducts = await getProductsBySeasonalCollection(collectionSlug);
+        if (isMounted) {
+          setProducts(nextProducts);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setProducts([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingProducts(false);
+        }
+      }
+    }
+
+    loadProducts();
+    return () => {
+      isMounted = false;
+    };
+  }, [collectionSlug]);
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--cream)', color: 'var(--ink)' }}>
       <Navbar />
-      <main style={{ padding: '48px 6% 72px' }}>
-        <section style={{ maxWidth: 1120, margin: '0 auto 34px' }}>
+      <main style={{ padding: '40px 6% 72px' }}>
+        <section style={{ maxWidth: 1120, margin: '0 auto 30px', border: '1px solid rgba(74,124,138,.18)', borderRadius: 18, background: 'linear-gradient(98deg, rgba(236,244,252,.92) 0%, rgba(250,246,239,.9) 100%)', padding: 24 }}>
           <div style={{ marginBottom: 18, color: 'var(--terracotta)', fontSize: '.82rem', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase' }}>
             Seasonal Collection
           </div>
@@ -44,15 +71,15 @@ function SeasonalPage() {
         </section>
 
         <section style={{ maxWidth: 1120, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 18 }}>
-          {products.length > 0 ? products.map((product) => (
-            <article key={product.id} style={{ background: 'rgba(255,255,255,.85)', border: '1px solid var(--mist)', borderRadius: 22, padding: 24, boxShadow: '0 12px 30px rgba(74,124,138,.09)' }}>
+          {!isLoadingProducts && products.length > 0 ? products.map((product) => (
+            <article key={product.id} style={{ background: 'rgba(255,255,255,.9)', border: '1px solid rgba(74,124,138,.18)', borderRadius: 14, padding: 22, boxShadow: '0 12px 30px rgba(74,124,138,.09)' }}>
               <div style={{ display: 'inline-flex', padding: '4px 10px', borderRadius: 999, background: 'var(--warm-soft)', color: 'var(--warm-strong)', fontSize: '.72rem', fontWeight: 700, marginBottom: 14 }}>{product.badge}</div>
               <h2 style={{ margin: '0 0 8px', fontSize: '1.15rem' }}>{product.name}</h2>
               <p style={{ color: 'var(--mid)', lineHeight: 1.6, minHeight: 72 }}>{product.description}</p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 18 }}>
                 <strong style={{ fontSize: '1.2rem' }}>${product.price.toFixed(2)}</strong>
                 <button
-                  style={{ border: 'none', borderRadius: 12, padding: '11px 16px', background: 'var(--ink)', color: 'white', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ border: 'none', borderRadius: 10, padding: '11px 16px', background: 'var(--ink)', color: 'white', fontWeight: 700, cursor: 'pointer' }}
                   onClick={() => addProduct(product)}
                 >
                   Add to Cart
@@ -61,8 +88,12 @@ function SeasonalPage() {
             </article>
           )) : (
             <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,.78)', border: '1px dashed var(--mist)', borderRadius: 20, padding: 28 }}>
-              <h2 style={{ marginTop: 0 }}>Collection ready to activate</h2>
-              <p style={{ color: 'var(--mid)', lineHeight: 1.6 }}>This seasonal page exists in the catalog and can be turned on or off with a single visibility flag in the navigation data.</p>
+              <h2 style={{ marginTop: 0 }}>{isLoadingProducts ? 'Loading collection...' : 'Collection ready to activate'}</h2>
+              <p style={{ color: 'var(--mid)', lineHeight: 1.6 }}>
+                {isLoadingProducts
+                  ? 'Fetching this seasonal collection from the live catalog.'
+                  : 'This seasonal page exists in the catalog and can be turned on or off with a single visibility flag in the navigation data.'}
+              </p>
             </div>
           )}
         </section>

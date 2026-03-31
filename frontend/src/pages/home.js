@@ -1,307 +1,398 @@
-import { useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/navbar';
 import SiteFooter from '../components/siteFooter';
-import BuildKitBuilder from '../components/buildKitBuilder';
 import { useCart } from '../context/cartContext';
 import { getFeaturedProducts } from '../data/catalog';
-import { getVisibleSeasonalCollections, STORE_SPECIES } from '../data/navigation';
 
 export default function Home() {
-  const location = useLocation();
   const { addProduct } = useCart();
-  const fullLogoPath = '/karmy-logo-full.png';
-  const featuredProducts = getFeaturedProducts(4);
-  const seasonalCollections = getVisibleSeasonalCollections();
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
 
   useEffect(() => {
-    if (location.pathname === '/build-your-kit') {
-      window.requestAnimationFrame(() => {
-        const builder = document.getElementById('builder');
-        if (builder) {
-          builder.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    let isMounted = true;
+
+    async function loadFeatured() {
+      try {
+        const products = await getFeaturedProducts(8);
+        if (isMounted) {
+          setFeaturedProducts(products);
         }
-      });
+      } catch (error) {
+        if (isMounted) {
+          setFeaturedProducts([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingFeatured(false);
+        }
+      }
     }
-  }, [location.pathname]);
+
+    loadFeatured();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const featuredShowcaseProducts = featuredProducts.slice(0, 3);
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", background: 'var(--cream)', minHeight: '100vh', color: 'var(--ink)' }}>
       <style>{`
-        @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes popIn { from{opacity:0;transform:scale(.92)} to{opacity:1;transform:scale(1)} }
-        .fade-up { animation: fadeUp .55s ease both; }
-        .fade-up-2 { animation: fadeUp .55s .12s ease both; }
-        .fade-up-3 { animation: fadeUp .55s .24s ease both; }
-        .base-card {
-          border: 2px solid var(--mist);
-          border-radius: 20px;
-          padding: 28px 24px;
-          cursor: pointer;
-          background: var(--white);
-          transition: border-color .2s, box-shadow .2s, transform .18s;
-          position: relative;
+        .home-hero-grid {
+          display: grid;
+          grid-template-columns: 1.05fr .95fr;
+          gap: 20px;
         }
-        .base-card:hover { border-color: var(--teal); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(74,124,138,.18); }
-        .base-card.selected { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
-        .addon-chip {
-          border: 1.5px solid var(--mist);
-          border-radius: 14px;
-          padding: 14px 16px;
-          cursor: pointer;
-          background: var(--white);
-          transition: all .2s;
+        .home-hero-copy {
+          border-radius: 26px;
+          border: 1px solid rgba(74,124,138,.2);
+          background: linear-gradient(98deg, rgba(236,244,252,.94) 0%, rgba(250,246,239,.92) 100%);
+          box-shadow: 0 18px 40px rgba(55,82,92,.12);
+          padding: 34px;
+        }
+        .home-hero-actions {
+          margin-top: 22px;
           display: flex;
-          align-items: center;
           gap: 12px;
+          flex-wrap: wrap;
         }
-        .addon-chip:hover { border-color: var(--teal); transform: translateY(-2px); }
-        .addon-chip.selected { border-color: var(--ink); background: var(--ink); color: white; }
-        .pill { display: inline-flex; align-items: center; gap: 5px; background: var(--terracotta); color: var(--white); font-size: .7rem; font-weight: 600; letter-spacing: .06em; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; }
-        .pill-outline { background: transparent; border: 1.5px solid currentColor; }
-        .pill-green { background: var(--warm-soft); color: var(--warm-strong); }
-        .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; transition: all .3s; }
-        .step-dot.done { background: var(--ink); color: white; }
-        .step-dot.active { background: var(--peach); color: var(--ink); }
-        .step-dot.idle { background: var(--mist); color: var(--mid); }
-        .btn-primary { background: var(--ink); color: white; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 1rem; padding: 15px 32px; cursor: pointer; transition: background .2s, transform .12s; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-primary:hover { background: var(--ink-strong); transform: translateY(-1px); }
-        .btn-primary:disabled { background: #ccc; cursor: not-allowed; transform: none; }
-        .btn-lime { background: var(--terracotta); color: var(--white); border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1.05rem; padding: 16px 36px; cursor: pointer; transition: filter .2s, transform .12s; }
-        .btn-lime:hover { filter: brightness(.92); transform: translateY(-1px); }
-        .btn-ghost { background: transparent; border: 1.5px solid var(--mist); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: .9rem; color: var(--mid); padding: 10px 22px; cursor: pointer; transition: border-color .2s; }
-        .btn-ghost:hover { border-color: var(--teal); color: var(--ink); }
-        .price-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--mist); }
-        .strikethrough { text-decoration: line-through; color: var(--mid); font-size: .85rem; }
-        .free-tag { color: var(--warm-strong); font-weight: 700; font-size: .9rem; }
-        .summary-card { background: var(--surface); border-radius: 20px; padding: 28px; border: 1.5px solid var(--mist); }
-        .brand-lockup { width: clamp(136px, 18vw, 170px); height: auto; display: block; filter: drop-shadow(0 10px 18px rgba(74,124,138,.12)); }
-        .hero-logo { width: min(300px, 58vw); height: auto; display: block; margin-bottom: 20px; filter: drop-shadow(0 12px 22px rgba(74,124,138,.17)); }
-        .footer-mark { width: 62px; height: 62px; display: block; }
-        .hero-surface { border-radius: 26px; border: 1px solid var(--mist); background: linear-gradient(160deg, rgba(255,255,255,.75), rgba(249,247,239,.9)); box-shadow: 0 16px 42px rgba(74,124,138,.13); padding: 36px; }
-        .section-soft { background: transparent; }
-        .store-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
-        .store-entry-card {
-          background: rgba(255,255,255,.84);
+        .home-cta-primary,
+        .home-cta-secondary {
+          text-decoration: none;
+          border-radius: 12px;
+          padding: 11px 16px;
+          font-size: .88rem;
+          font-weight: 700;
+          letter-spacing: .02em;
+        }
+        .home-cta-primary {
+          background: var(--ink);
+          color: var(--white);
+          border: 1px solid var(--ink);
+        }
+        .home-cta-secondary {
+          color: var(--ink);
           border: 1px solid var(--mist);
-          border-radius: 24px;
-          padding: 24px;
+          background: rgba(255,255,255,.75);
+        }
+        .home-photo-placeholder {
+          min-height: 340px;
+          border-radius: 140px;
+          border: 1px solid rgba(74,124,138,.26);
+          background:
+            linear-gradient(180deg, rgba(248,211,141,.92), rgba(243,131,55,.95));
+          display: grid;
+          place-items: center;
+          text-align: center;
+          padding: 26px;
+          color: var(--mid);
+        }
+        .quick-shop-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+          gap: 14px;
+        }
+        .quick-shop-card {
+          display: block;
           text-decoration: none;
           color: var(--ink);
-          box-shadow: 0 14px 34px rgba(74,124,138,.08);
+          background: rgba(255,255,255,.9);
+          border: 1px solid rgba(74,124,138,.18);
+          border-radius: 14px;
+          padding: 18px;
+          box-shadow: 0 12px 28px rgba(74,124,138,.09);
           transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-          display: block;
         }
-        .store-entry-card:hover { transform: translateY(-4px); box-shadow: 0 18px 38px rgba(74,124,138,.13); border-color: var(--teal); }
-        .store-entry-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; margin-bottom: 10px; }
-        .store-entry-card p { color: var(--mid); line-height: 1.7; font-size: .94rem; margin-bottom: 18px; }
-        .store-mini-links { display: flex; flex-wrap: wrap; gap: 8px; }
-        .store-mini-chip {
-          display: inline-flex;
-          align-items: center;
-          padding: 7px 10px;
-          border-radius: 999px;
-          background: rgba(74,124,138,.08);
-          color: var(--ink);
-          font-size: .76rem;
+        .quick-shop-card:hover {
+          transform: translateY(-2px);
+          border-color: var(--teal);
+          box-shadow: 0 12px 28px rgba(74,124,138,.12);
+        }
+        .quick-shop-kicker {
+          margin: 0 0 6px;
+          color: var(--terracotta);
+          font-size: .72rem;
           font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: .08em;
         }
         .featured-product-card {
-          background: rgba(255,255,255,.88);
-          border: 1px solid var(--mist);
-          border-radius: 22px;
-          padding: 22px;
-          box-shadow: 0 12px 30px rgba(74,124,138,.08);
+          background: rgba(255,255,255,.94);
+          border: 1px solid rgba(74,124,138,.18);
+          border-radius: 14px;
+          padding: 18px;
+          box-shadow: 0 12px 28px rgba(74,124,138,.08);
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
         }
-        .featured-product-card p { color: var(--mid); line-height: 1.6; font-size: .92rem; min-height: 68px; }
-        .seasonal-banner {
-          background: linear-gradient(145deg, rgba(244,194,145,.35), rgba(255,255,255,.8));
-          border: 1px solid var(--mist);
-          border-radius: 24px;
-          padding: 24px;
+        .featured-product-card.pet-border {
+          position: relative;
+          border: 1px solid rgba(74,124,138,.22);
+          background:
+            linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,252,244,.94));
+          box-shadow: 0 18px 34px rgba(74,124,138,.12);
         }
-        .trust-row { background: linear-gradient(180deg, rgba(74,124,138,.1), rgba(74,124,138,.04)); border-top: 1px solid var(--mist); border-bottom: 1px solid var(--mist); }
-        .site-footer { background: var(--surface-soft); border-top: 1px solid var(--mist); }
-        @media (max-width: 700px) {
-          .two-col { grid-template-columns: 1fr !important; }
-          .addon-grid { grid-template-columns: 1fr 1fr !important; }
-          .hero-surface { padding: 24px 18px; }
-          .brand-lockup { width: 122px; }
-          .hero-logo { width: min(250px, 72vw); }
+        .featured-product-card.pet-border::before {
+          content: attr(data-animal);
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          font-size: .72rem;
+          letter-spacing: .06em;
+          text-transform: uppercase;
+          padding: 4px 9px;
+          border-radius: 999px;
+          color: var(--ink);
+          background: rgba(244,194,145,.34);
+          border: 1px solid rgba(74,124,138,.18);
+          font-weight: 700;
+        }
+        .staggered-pet-grid {
+          display: grid;
+          grid-template-columns: .92fr 1fr .92fr;
+          gap: 18px;
+          align-items: start;
+        }
+        .staggered-pet-grid .featured-product-card {
+          min-height: 470px;
+        }
+        .staggered-pet-grid .featured-product-card:nth-child(2) {
+          margin-top: 26px;
+        }
+        .staggered-pet-grid .featured-product-card:nth-child(3) {
+          margin-top: 52px;
+        }
+        .featured-image-slot {
+          width: 100%;
+          aspect-ratio: 16 / 10;
+          border-radius: 16px;
+          border: 1px solid rgba(74,124,138,.15);
+          background: linear-gradient(135deg, rgba(244,194,145,.32), rgba(74,124,138,.14));
+          display: flex;
+          align-items: end;
+          justify-content: space-between;
+          padding: 12px;
+        }
+        .featured-image-slot.portrait {
+          aspect-ratio: 4 / 5.4;
+          align-items: start;
+        }
+        .featured-image-slot span {
+          font-size: .72rem;
+          font-weight: 700;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+          color: var(--ink);
+          background: rgba(255,255,255,.72);
+          border-radius: 999px;
+          padding: 5px 10px;
+        }
+        .pill {
+          display: inline-flex;
+          align-items: center;
+          background: var(--terracotta);
+          color: var(--white);
+          font-size: .7rem;
+          font-weight: 600;
+          letter-spacing: .06em;
+          padding: 3px 10px;
+          border-radius: 20px;
+          text-transform: uppercase;
+        }
+        .btn-primary {
+          background: var(--ink);
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-family: 'DM Sans', sans-serif;
+          font-weight: 600;
+          font-size: .92rem;
+          padding: 10px 14px;
+          cursor: pointer;
+        }
+        .trust-strip {
+          margin-top: 26px;
+          border-radius: 20px;
+          border: 1px solid var(--mist);
+          background: rgba(255,255,255,.84);
+          padding: 18px;
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+        }
+        .trust-pill {
+          border: 1px solid rgba(74,124,138,.12);
+          border-radius: 14px;
+          background: rgba(249,247,239,.72);
+          padding: 12px;
+        }
+        .trust-pill strong {
+          display: block;
+          font-size: .88rem;
+          margin-bottom: 4px;
+        }
+        .trust-pill span {
+          color: var(--mid);
+          font-size: .8rem;
+          line-height: 1.5;
+        }
+        @media (max-width: 900px) {
+          .home-hero-grid {
+            grid-template-columns: 1fr;
+          }
+          .home-photo-placeholder {
+            min-height: 240px;
+          }
+          .staggered-pet-grid {
+            grid-template-columns: 1fr;
+          }
+          .staggered-pet-grid .featured-product-card {
+            min-height: unset;
+          }
+          .staggered-pet-grid .featured-product-card:nth-child(2),
+          .staggered-pet-grid .featured-product-card:nth-child(3) {
+            margin-top: 0;
+          }
+          .trust-strip {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
 
       <Navbar />
 
-      <section style={{ background: 'transparent', padding: '52px 6% 56px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', right: -80, top: -80, width: 480, height: 480, borderRadius: '50%', background: 'rgba(232,155,95,.11)' }} />
-        <div style={{ position: 'absolute', right: 80, bottom: -120, width: 300, height: 300, borderRadius: '50%', background: 'rgba(74,124,138,.09)' }} />
-        <div className="hero-surface" style={{ maxWidth: 900, margin: '0 auto', position: 'relative' }}>
-          <img className="hero-logo fade-up" src={fullLogoPath} alt="Karmy Pet Shop logo" onError={(event) => { event.currentTarget.style.display = 'none'; }} />
-          <div className="pill fade-up" style={{ marginBottom: 20 }}>Clip &amp; Go System</div>
-          <h1 className="fade-up-2" style={{ fontFamily: "'Cormorant Garamond', serif", color: 'var(--ink)', fontSize: 'clamp(2.6rem, 6vw, 4.5rem)', fontWeight: 700, lineHeight: 1.05, marginBottom: 20 }}>
-            Build the kit
-            <br />
-            your dog or cat deserves.
-          </h1>
-          <p className="fade-up-3" style={{ color: 'var(--mid)', fontSize: '1.1rem', fontWeight: 400, lineHeight: 1.7, maxWidth: 600, marginBottom: 36 }}>
-            Choose a harness or leash, then snap on the accessories you want. Every harness comes with{' '}
-            <strong style={{ color: 'var(--terracotta)' }}>2 accessories free</strong> - mix, match, and customize.
-          </p>
-          <div className="fade-up-3" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-            <button
-              className="btn-lime"
-              onClick={() => {
-                const builder = document.getElementById('builder');
-                if (builder) builder.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Start Building →
-            </button>
-            <Link className="btn-ghost" to="/shop/dog/harnesses" style={{ textDecoration: 'none' }}>
-              Shop Dog Gear
-            </Link>
-            <div style={{ display: 'flex', gap: 20, marginLeft: 8 }}>
-              {['Harness from $54.99', 'Leash from $24.99', 'Add-ons $12.99'].map((txt) => (
-                <div key={txt} style={{ color: 'var(--mid)', fontSize: '.82rem', display: 'flex', alignItems: 'center', gap: 5 }}>
-                  {txt}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section style={{ padding: '0 6% 56px' }}>
-        <div style={{ maxWidth: 1120, margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 20, flexWrap: 'wrap', marginBottom: 24 }}>
-            <div>
-              <div style={{ marginBottom: 10, color: 'var(--terracotta)', fontSize: '.78rem', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase' }}>Storefront</div>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2rem, 4vw, 3.3rem)', margin: 0 }}>Shop by species</h2>
-            </div>
-            <p style={{ maxWidth: 500, color: 'var(--mid)', lineHeight: 1.7, margin: 0 }}>
-              The main menu now supports dedicated dog and cat assortments, with category pages for clothes, harnesses, leashes, toys, gadgets, beds, training pads, trees, and hiking gear.
-            </p>
-          </div>
-
-          <div className="store-card-grid">
-            {STORE_SPECIES.map((species) => (
-              <Link key={species.slug} className="store-entry-card" to={`/shop/${species.slug}/${species.categories[0].slug}`}>
-                <div className="pill" style={{ marginBottom: 16 }}>{species.shortLabel}</div>
-                <h3>{species.label}</h3>
-                <p>{species.description}</p>
-                <div className="store-mini-links">
-                  {species.categories.filter((category) => category.visible).slice(0, 4).map((category) => (
-                    <span key={category.slug} className="store-mini-chip">{category.label}</span>
-                  ))}
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section style={{ padding: '0 6% 56px' }}>
-        <div style={{ maxWidth: 1120, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.1fr .9fr', gap: 18 }} className="two-col">
-            <div className="seasonal-banner">
-              <div style={{ marginBottom: 10, color: 'var(--terracotta)', fontSize: '.78rem', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase' }}>Seasonal control</div>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.8rem, 4vw, 3rem)', marginBottom: 12 }}>
-                Seasonal pages can be switched on and off.
-              </h2>
-              <p style={{ color: 'var(--mid)', lineHeight: 1.7, marginBottom: 18 }}>
-                Active collections are already routed. Hidden ones stay in the data model until you decide to publish them.
+      <section style={{ padding: '52px 6% 40px' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div className="home-hero-grid">
+            <div className="home-hero-copy">
+              <div style={{ marginBottom: 12, color: 'var(--terracotta)', fontSize: '.78rem', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase' }}>
+                Build Your Own Kit
+              </div>
+              <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2.6rem, 5vw, 4.4rem)', margin: '0 0 12px', lineHeight: 1.03 }}>
+                Build a better everyday setup for your pet.
+              </h1>
+              <p style={{ color: 'var(--mid)', maxWidth: 760, lineHeight: 1.7, margin: '0 0 18px' }}>
+                Start with our custom Build Your Own Kit flow, then explore dog and cat categories with a cleaner menu built for quick shopping.
               </p>
-              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                {seasonalCollections.map((collection) => (
-                  <Link key={collection.slug} to={`/seasonal/${collection.slug}`} className="store-mini-chip" style={{ textDecoration: 'none' }}>
-                    {collection.label}
-                  </Link>
-                ))}
+              <div className="home-hero-actions">
+                <Link to="/build-your-own-kit" className="home-cta-primary">Start Building</Link>
+                <Link to="/shop/dog/harnesses" className="home-cta-secondary">Shop Dog Essentials</Link>
               </div>
             </div>
 
-            <div className="store-entry-card" style={{ background: 'rgba(255,252,244,.92)' }}>
-              <div className="pill pill-green" style={{ marginBottom: 16 }}>Builder</div>
-              <h3>Keep the custom kit flow</h3>
-              <p>
-                The storefront now supports shopping pages, but the existing harness-and-leash builder remains part of the homepage so you can keep selling configurable kits alongside catalog products.
-              </p>
-              <button
-                className="btn-primary"
-                onClick={() => {
-                  const builder = document.getElementById('builder');
-                  if (builder) builder.scrollIntoView({ behavior: 'smooth' });
-                }}
-              >
-                Jump to Builder →
-              </button>
+            <div className="home-photo-placeholder">
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '.95rem', letterSpacing: '.06em', textTransform: 'uppercase', marginBottom: 8 }}>
+                  Pet Photo Spotlight
+                </div>
+                <div style={{ fontSize: '.92rem', lineHeight: 1.7 }}>
+                  Place your lead hero photo here from Unsplash or Pexels to anchor the page with real pet lifestyle imagery.
+                </div>
+              </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: '0 6% 44px' }}>
+        <div style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <div className="quick-shop-grid">
+            <Link className="quick-shop-card" to="/shop/dog/harnesses">
+              <p className="quick-shop-kicker">Shop by Species</p>
+              <h3 style={{ fontSize: '1.08rem', margin: '0 0 8px' }}>Dogs</h3>
+              <p style={{ margin: 0, color: 'var(--mid)', lineHeight: 1.6 }}>Harnesses, leashes, toys, beds, and outdoor picks for dogs.</p>
+            </Link>
+            <Link className="quick-shop-card" to="/shop/cat/trees">
+              <p className="quick-shop-kicker">Shop by Species</p>
+              <h3 style={{ fontSize: '1.08rem', margin: '0 0 8px' }}>Cats</h3>
+              <p style={{ margin: 0, color: 'var(--mid)', lineHeight: 1.6 }}>Trees, toys, beds, and comfort gear built for cats.</p>
+            </Link>
+            <Link className="quick-shop-card" to="/seasonal/spring-trail-essentials">
+              <p className="quick-shop-kicker">Shop by Season</p>
+              <h3 style={{ fontSize: '1.08rem', margin: '0 0 8px' }}>Seasonal Collections</h3>
+              <p style={{ margin: 0, color: 'var(--mid)', lineHeight: 1.6 }}>Limited-time collections organized by season and activity.</p>
+            </Link>
+            <Link className="quick-shop-card" to="/shop/dog/gadgets">
+              <p className="quick-shop-kicker">Shop by Category</p>
+              <h3 style={{ fontSize: '1.08rem', margin: '0 0 8px' }}>Accessories & Gadgets</h3>
+              <p style={{ margin: 0, color: 'var(--mid)', lineHeight: 1.6 }}>Smart gear, travel helpers, and everyday add-ons.</p>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: '0 6% 46px' }}>
+        <div style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <div style={{ border: '1px solid var(--mist)', borderRadius: 22, background: 'rgba(255,252,244,.86)', padding: 24 }}>
+            <div style={{ marginBottom: 8, color: 'var(--terracotta)', fontSize: '.78rem', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase' }}>
+              Our Promise
+            </div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.8rem, 4vw, 2.7rem)', margin: '0 0 8px' }}>
+              Built for comfort, quality, and simple shopping.
+            </h2>
+            <p style={{ margin: 0, color: 'var(--mid)', lineHeight: 1.7, maxWidth: 920 }}>
+              We focus on clear categories, practical products, and a smoother path from browse to cart so families can find what they need faster.
+            </p>
           </div>
         </div>
       </section>
 
       <section style={{ padding: '0 6% 56px' }}>
         <div style={{ maxWidth: 1120, margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 20, flexWrap: 'wrap', marginBottom: 24 }}>
-            <div>
-              <div style={{ marginBottom: 10, color: 'var(--terracotta)', fontSize: '.78rem', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase' }}>Featured assortment</div>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2rem, 4vw, 3.3rem)', margin: 0 }}>What shoppers can browse now</h2>
-            </div>
+          <div style={{ marginBottom: 22 }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(2rem, 4vw, 3.2rem)', margin: 0 }}>
+              Featured Essentials
+            </h2>
           </div>
 
-          <div className="store-card-grid">
-            {featuredProducts.map((product) => (
-              <article key={product.id} className="featured-product-card">
-                <div className="pill" style={{ marginBottom: 14 }}>{product.badge}</div>
-                <h3 style={{ fontSize: '1.25rem', marginBottom: 8 }}>{product.name}</h3>
-                <p>{product.description}</p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 18 }}>
-                  <strong style={{ fontSize: '1.15rem' }}>${product.price.toFixed(2)}</strong>
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    style={{ padding: '10px 14px', fontSize: '.82rem' }}
-                    onClick={() => addProduct(product)}
-                  >
-                    Add
-                  </button>
+          <div className="staggered-pet-grid">
+            {!isLoadingFeatured && featuredShowcaseProducts.length > 0 ? featuredShowcaseProducts.map((product) => (
+              <article key={product.id} className="featured-product-card pet-border" data-animal={product.species === 'cat' ? 'Cat lounge' : 'Dog trail'}>
+                <div className="featured-image-slot portrait">
+                  <span>{product.species}</span>
+                  <span>{product.category.replace('-', ' ')}</span>
                 </div>
-                <Link to={`/shop/${product.species}/${product.category}`} style={{ display: 'inline-block', marginTop: 12, color: 'var(--mid)', textDecoration: 'none', fontSize: '.82rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em' }}>
-                  View category →
+                  <div className="pill" style={{ width: 'fit-content' }}>{product.badge}</div>
+                <h3 style={{ fontSize: '1.2rem', margin: 0 }}>{product.name}</h3>
+                <p style={{ color: 'var(--mid)', lineHeight: 1.6, margin: 0, minHeight: 64 }}>{product.description}</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+                  <strong style={{ fontSize: '1.1rem' }}>${product.price.toFixed(2)}</strong>
+                </div>
+                <button type="button" className="btn-primary" style={{ width: '100%', marginTop: 4 }} onClick={() => addProduct(product)}>
+                  Add to Cart
+                </button>
+                <Link to={`/shop/${product.species}/${product.category}`} style={{ marginTop: 4, color: 'var(--mid)', textDecoration: 'none', fontSize: '.82rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em' }}>
+                  Browse more in this category &rarr;
                 </Link>
               </article>
-            ))}
+            )) : (
+              <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,.78)', border: '1px dashed var(--mist)', borderRadius: 20, padding: 28 }}>
+                <h3 style={{ marginTop: 0 }}>{isLoadingFeatured ? 'Loading featured products...' : 'Featured products are not available yet'}</h3>
+                <p style={{ color: 'var(--mid)', lineHeight: 1.6, marginBottom: 0 }}>
+                  {isLoadingFeatured ? 'Fetching live catalog data.' : 'Run backend seed data or add products in admin to populate this section.'}
+                </p>
+              </div>
+            )}
           </div>
-        </div>
-      </section>
 
-      <section className="section-soft" style={{ padding: '40px 6% 56px', borderBottom: '1px solid var(--mist)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 40 }}>
-          {[
-            { n: '1', title: 'Pick your base', body: 'Start with a harness or leash - the foundation of your kit.', accent: 'var(--peach)' },
-            { n: '2', title: 'Choose add-ons', body: 'Snap on lights, treats, water, tags and more. Harness = 2 free.', accent: 'var(--terracotta)' },
-            { n: '3', title: 'See your total', body: "Live pricing shows exactly what's free and what you're paying.", accent: 'var(--peach)' },
-            { n: '4', title: 'Ships to your door', body: 'Drop-shipped fast. Every order arrives ready to clip & go.', accent: 'var(--terracotta)' },
-          ].map((s) => (
-            <div key={s.n}>
-              <div style={{ width: 40, height: 40, background: s.accent, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1rem', marginBottom: 14 }}>{s.n}</div>
-              <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.3rem', fontWeight: 700, marginBottom: 6 }}>{s.title}</h3>
-              <p style={{ color: 'var(--mid)', fontSize: '.9rem', lineHeight: 1.6 }}>{s.body}</p>
+          <div className="trust-strip">
+            <div className="trust-pill">
+              <strong>Fast Support</strong>
+              <span>Questions on sizing, shipping, or products? Reach us quickly through contact support.</span>
             </div>
-          ))}
-        </div>
-      </section>
-
-      <BuildKitBuilder />
-
-      <section className="trust-row" style={{ padding: '36px 6%' }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 24 }}>
-          {['Ships in 1-3 days', 'Vet approved', 'Secure checkout', 'Real support'].map((txt) => (
-            <div key={txt} style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ink)', fontSize: '.88rem' }}>
-              {txt}
+            <div className="trust-pill">
+              <strong>Simple Returns</strong>
+              <span>30-day return window for eligible items to keep shopping low stress.</span>
             </div>
-          ))}
+            <div className="trust-pill">
+              <strong>Shipping Clarity</strong>
+              <span>Transparent delivery details and free shipping threshold shown up front.</span>
+            </div>
+          </div>
         </div>
       </section>
 

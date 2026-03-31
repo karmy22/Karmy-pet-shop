@@ -1,16 +1,64 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/navbar';
 import SiteFooter from '../components/siteFooter';
 import { useCart } from '../context/cartContext';
+import { useAuth } from '../context/authContext';
+import { createOrder } from '../api/orderApi';
 
 function CartPage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const { items, itemCount, subtotal, changeQuantity, removeItem, clearCart } = useCart();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
+  const [checkoutSuccess, setCheckoutSuccess] = useState('');
+
+  async function handleCheckout() {
+    setCheckoutError('');
+    setCheckoutSuccess('');
+
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    if (!items.length) {
+      setCheckoutError('Your cart is empty.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const token = await user.getIdToken();
+      const payloadItems = items.map((item) => ({
+        type: item.type,
+        id: item.id,
+        name: item.name,
+        price: Number(item.price),
+        quantity: Number(item.quantity),
+        meta: item.meta || {},
+      }));
+
+      const response = await createOrder({
+        items: payloadItems,
+        token,
+        shipping: 0,
+      });
+
+      clearCart();
+      setCheckoutSuccess(`Order placed successfully: ${response.order?._id || 'created'}`);
+    } catch (error) {
+      setCheckoutError(error.message || 'Checkout failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--cream)', color: 'var(--ink)' }}>
       <Navbar />
-      <main style={{ padding: '48px 6% 72px', maxWidth: 1120, margin: '0 auto' }}>
+      <main style={{ padding: '40px 6% 72px', maxWidth: 1120, margin: '0 auto' }}>
         <div style={{ marginBottom: 26 }}>
           <div style={{ marginBottom: 12, color: 'var(--terracotta)', fontSize: '.82rem', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase' }}>
             Shopping Cart
@@ -24,7 +72,7 @@ function CartPage() {
         </div>
 
         {items.length === 0 ? (
-          <section style={{ background: 'rgba(255,255,255,.84)', border: '1px solid var(--mist)', borderRadius: 22, padding: 26 }}>
+          <section style={{ background: 'rgba(255,255,255,.9)', border: '1px solid rgba(74,124,138,.18)', borderRadius: 14, padding: 24 }}>
             <p style={{ color: 'var(--mid)', marginTop: 0 }}>Add products from category pages or create a custom kit from the builder.</p>
             <Link to="/" style={{ textDecoration: 'none', color: 'var(--ink)', fontWeight: 700 }}>
               Return to store home
@@ -33,7 +81,7 @@ function CartPage() {
         ) : (
           <div style={{ display: 'grid', gap: 16 }}>
             {items.map((item) => (
-              <article key={`${item.type}-${item.id}`} style={{ background: 'rgba(255,255,255,.88)', border: '1px solid var(--mist)', borderRadius: 18, padding: 20, display: 'grid', gap: 14 }}>
+              <article key={`${item.type}-${item.id}`} style={{ background: 'rgba(255,255,255,.9)', border: '1px solid rgba(74,124,138,.18)', borderRadius: 14, padding: 20, display: 'grid', gap: 14 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14, alignItems: 'start', flexWrap: 'wrap' }}>
                   <div>
                     <h2 style={{ margin: '0 0 6px', fontSize: '1.2rem' }}>{item.name}</h2>
@@ -49,9 +97,9 @@ function CartPage() {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                  <button type="button" onClick={() => changeQuantity(item.id, item.type, -1)} style={{ border: '1px solid var(--mist)', background: 'white', borderRadius: 10, width: 34, height: 34, cursor: 'pointer' }}>-</button>
+                  <button type="button" onClick={() => changeQuantity(item.id, item.type, -1)} style={{ border: '1px solid var(--mist)', background: 'white', borderRadius: 8, width: 34, height: 34, cursor: 'pointer' }}>-</button>
                   <span style={{ minWidth: 28, textAlign: 'center', fontWeight: 700 }}>{item.quantity}</span>
-                  <button type="button" onClick={() => changeQuantity(item.id, item.type, 1)} style={{ border: '1px solid var(--mist)', background: 'white', borderRadius: 10, width: 34, height: 34, cursor: 'pointer' }}>+</button>
+                  <button type="button" onClick={() => changeQuantity(item.id, item.type, 1)} style={{ border: '1px solid var(--mist)', background: 'white', borderRadius: 8, width: 34, height: 34, cursor: 'pointer' }}>+</button>
                   <button type="button" onClick={() => removeItem(item.id, item.type)} style={{ marginLeft: 'auto', border: 'none', background: 'transparent', color: 'var(--mid)', cursor: 'pointer', textDecoration: 'underline' }}>
                     Remove
                   </button>
@@ -59,16 +107,27 @@ function CartPage() {
               </article>
             ))}
 
-            <section style={{ background: 'rgba(255,252,244,.92)', border: '1px solid var(--mist)', borderRadius: 18, padding: 22 }}>
+            <section style={{ background: 'rgba(255,252,244,.92)', border: '1px solid rgba(74,124,138,.2)', borderRadius: 14, padding: 22 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <span style={{ color: 'var(--mid)' }}>Subtotal</span>
                 <strong style={{ fontSize: '1.35rem' }}>${subtotal.toFixed(2)}</strong>
               </div>
+              {checkoutError && (
+                <div style={{ marginBottom: 10, color: '#b42318', fontWeight: 600 }}>{checkoutError}</div>
+              )}
+              {checkoutSuccess && (
+                <div style={{ marginBottom: 10, color: '#027a48', fontWeight: 600 }}>{checkoutSuccess}</div>
+              )}
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                <button type="button" style={{ border: 'none', borderRadius: 12, padding: '12px 18px', background: 'var(--ink)', color: 'white', fontWeight: 700, cursor: 'pointer' }}>
-                  Proceed to Checkout
+                <button
+                  type="button"
+                  onClick={handleCheckout}
+                  disabled={isSubmitting}
+                  style={{ border: 'none', borderRadius: 10, padding: '12px 18px', background: 'var(--ink)', color: 'white', fontWeight: 700, cursor: isSubmitting ? 'wait' : 'pointer', opacity: isSubmitting ? 0.8 : 1 }}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Proceed to Checkout'}
                 </button>
-                <button type="button" onClick={clearCart} style={{ border: '1px solid var(--mist)', borderRadius: 12, padding: '12px 18px', background: 'white', color: 'var(--mid)', fontWeight: 600, cursor: 'pointer' }}>
+                <button type="button" onClick={clearCart} style={{ border: '1px solid var(--mist)', borderRadius: 10, padding: '12px 18px', background: 'white', color: 'var(--mid)', fontWeight: 600, cursor: 'pointer' }}>
                   Clear Cart
                 </button>
               </div>

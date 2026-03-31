@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -11,10 +11,17 @@ import Navbar from '../components/navbar';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.from || '/account';
   const [mode, setMode] = useState('login'); // 'login' | 'register'
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [shippingAddress, setShippingAddress] = useState('');
+  const [shippingCity, setShippingCity] = useState('');
+  const [shippingState, setShippingState] = useState('');
+  const [shippingPostalCode, setShippingPostalCode] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -29,12 +36,26 @@ export default function LoginPage() {
         await signInWithEmailAndPassword(auth, email, password);
       } else {
         if (!name.trim()) { setError('Please enter your name.'); setLoading(false); return; }
+        if (!shippingAddress.trim() || !shippingCity.trim() || !shippingState.trim() || !shippingPostalCode.trim()) {
+          setError('Please provide your shipping address details.');
+          setLoading(false);
+          return;
+        }
         const credential = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(credential.user, {
           displayName: name.trim(),
         });
+        localStorage.setItem(`karmy-profile-${credential.user.uid}`, JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          shippingAddress: shippingAddress.trim(),
+          shippingCity: shippingCity.trim(),
+          shippingState: shippingState.trim(),
+          shippingPostalCode: shippingPostalCode.trim(),
+          phone: phone.trim(),
+        }));
       }
-      navigate('/');
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(friendlyMessage(err.code));
     } finally {
@@ -47,7 +68,7 @@ export default function LoginPage() {
     clearError();
     try {
       await signInWithPopup(auth, googleProvider);
-      navigate('/');
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       if (err.code !== 'auth/popup-closed-by-user') {
         setError(friendlyMessage(err.code));
@@ -62,7 +83,7 @@ export default function LoginPage() {
       <Navbar />
 
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 6%' }}>
-        <div style={{ width: '100%', maxWidth: 420, background: 'var(--white)', border: '1.5px solid var(--mist)', borderRadius: 24, padding: '40px 36px', boxShadow: '0 16px 42px rgba(74,124,138,.11)' }}>
+        <div style={{ width: '100%', maxWidth: 430, background: 'rgba(255,255,255,.94)', border: '1px solid rgba(74,124,138,.2)', borderRadius: 16, padding: '36px 32px', boxShadow: '0 18px 40px rgba(74,124,138,.12)' }}>
           <div style={{ display: 'flex', background: 'var(--cream)', borderRadius: 12, padding: 4, marginBottom: 28 }}>
             {['login', 'register'].map((m) => (
               <button
@@ -86,7 +107,7 @@ export default function LoginPage() {
             {mode === 'login' ? 'Welcome back' : 'Join Karmy'}
           </h1>
           <p style={{ color: 'var(--mid)', fontSize: '.9rem', marginBottom: 24 }}>
-            {mode === 'login' ? 'Sign in to your account to continue.' : 'Create an account to start shopping.'}
+            {mode === 'login' ? 'Sign in to your account to continue.' : 'Create an account with shipping details to start checkout faster.'}
           </p>
 
           <button
@@ -94,7 +115,7 @@ export default function LoginPage() {
             disabled={loading}
             style={{
               width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-              border: '1.5px solid var(--mist)', borderRadius: 12, padding: '12px 0',
+              border: '1.5px solid var(--mist)', borderRadius: 10, padding: '12px 0',
               background: 'var(--white)', fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
               fontSize: '.95rem', color: 'var(--ink)', cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? .6 : 1, transition: 'border-color .2s',
@@ -133,6 +154,75 @@ export default function LoginPage() {
                   onFocus={e => { e.target.style.borderColor = 'var(--teal)'; }}
                   onBlur={e => { e.target.style.borderColor = 'var(--mist)'; }}
                 />
+
+                <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: '.85rem' }}>Shipping address</label>
+                <input
+                  type="text"
+                  required
+                  autoComplete="street-address"
+                  value={shippingAddress}
+                  onChange={e => setShippingAddress(e.target.value)}
+                  placeholder="123 Main St"
+                  style={inputStyle}
+                  onFocus={e => { e.target.style.borderColor = 'var(--teal)'; }}
+                  onBlur={e => { e.target.style.borderColor = 'var(--mist)'; }}
+                />
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: '.85rem' }}>City</label>
+                    <input
+                      type="text"
+                      required
+                      autoComplete="address-level2"
+                      value={shippingCity}
+                      onChange={e => setShippingCity(e.target.value)}
+                      placeholder="City"
+                      style={{ ...inputStyle, marginBottom: 12 }}
+                      onFocus={e => { e.target.style.borderColor = 'var(--teal)'; }}
+                      onBlur={e => { e.target.style.borderColor = 'var(--mist)'; }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: '.85rem' }}>State</label>
+                    <input
+                      type="text"
+                      required
+                      autoComplete="address-level1"
+                      value={shippingState}
+                      onChange={e => setShippingState(e.target.value)}
+                      placeholder="State"
+                      style={{ ...inputStyle, marginBottom: 12 }}
+                      onFocus={e => { e.target.style.borderColor = 'var(--teal)'; }}
+                      onBlur={e => { e.target.style.borderColor = 'var(--mist)'; }}
+                    />
+                  </div>
+                </div>
+
+                <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: '.85rem' }}>Postal code</label>
+                <input
+                  type="text"
+                  required
+                  autoComplete="postal-code"
+                  value={shippingPostalCode}
+                  onChange={e => setShippingPostalCode(e.target.value)}
+                  placeholder="Postal code"
+                  style={inputStyle}
+                  onFocus={e => { e.target.style.borderColor = 'var(--teal)'; }}
+                  onBlur={e => { e.target.style.borderColor = 'var(--mist)'; }}
+                />
+
+                <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: '.85rem' }}>Phone (optional)</label>
+                <input
+                  type="tel"
+                  autoComplete="tel"
+                  value={phone}
+                  onChange={e => setPhone(e.target.value)}
+                  placeholder="(555) 555-5555"
+                  style={inputStyle}
+                  onFocus={e => { e.target.style.borderColor = 'var(--teal)'; }}
+                  onBlur={e => { e.target.style.borderColor = 'var(--mist)'; }}
+                />
               </>
             )}
             <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: '.85rem' }}>Email</label>
@@ -161,6 +251,17 @@ export default function LoginPage() {
               onBlur={e => { e.target.style.borderColor = 'var(--mist)'; }}
             />
 
+            {mode === 'login' && (
+              <div style={{ marginTop: -10, marginBottom: 16 }}>
+                <Link
+                  to="/forgot-password"
+                  style={{ fontSize: '.82rem', color: 'var(--ink)', fontWeight: 600, textDecoration: 'none' }}
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            )}
+
             {error && (
               <div style={{ background: '#fff0f0', border: '1px solid #f5c6c6', borderRadius: 10, padding: '10px 14px', color: '#c0392b', fontSize: '.85rem', marginBottom: 16 }}>
                 {error}
@@ -171,13 +272,13 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               style={{
-                width: '100%', border: 'none', borderRadius: 12, padding: '13px 0',
+                width: '100%', border: 'none', borderRadius: 10, padding: '13px 0',
                 background: 'var(--ink)', color: 'var(--white)', fontFamily: "'DM Sans', sans-serif",
                 fontWeight: 700, fontSize: '1rem', cursor: loading ? 'not-allowed' : 'pointer',
                 opacity: loading ? .7 : 1, transition: 'background .2s',
               }}
             >
-              {loading ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}
+              {loading ? 'Please wait...' : mode === 'login' ? 'Sign in' : 'Create account'}
             </button>
           </form>
         </div>

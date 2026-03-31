@@ -35,6 +35,15 @@ export const STORE_SPECIES = [
 
 export const SEASONAL_COLLECTIONS = [
   {
+    slug: 'winter-comfort-essentials',
+    label: 'Winter Comfort Essentials',
+    description: 'Warm layers, insulated gear, and cozy comfort picks for colder days.',
+    species: ['dog', 'cat'],
+    seasonKey: 'winter',
+    isSeasonal: true,
+    visible: true,
+  },
+  {
     slug: 'spring-trail-essentials',
     label: 'Spring Trail Essentials',
     description: 'Fresh-air gear for hikes, park days, and wet-weather outings.',
@@ -53,13 +62,13 @@ export const SEASONAL_COLLECTIONS = [
     visible: true,
   },
   {
-    slug: 'holiday-gifting',
-    label: 'Holiday Gifting',
-    description: 'Gift bundles and festive picks you can switch on when the season arrives.',
+    slug: 'autumn-cozy-essentials',
+    label: 'Autumn Cozy Essentials',
+    description: 'Layered apparel and outdoor-ready picks for crisp autumn weather.',
     species: ['dog', 'cat'],
-    seasonKey: 'winter',
+    seasonKey: 'autumn',
     isSeasonal: true,
-    visible: false,
+    visible: true,
   },
 ];
 

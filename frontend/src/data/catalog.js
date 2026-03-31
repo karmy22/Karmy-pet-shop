@@ -1,169 +1,18 @@
-export const PRODUCT_CATALOG = [
-  {
-    id: 'dog-rain-shell',
-    name: 'Storm Scout Rain Shell',
-    species: 'dog',
-    category: 'clothes',
-    price: 42.0,
-    badge: 'Waterproof',
-    description: 'Lightweight rain jacket with reflective trim for wet walks and campground mornings.',
-    tags: ['featured', 'outdoor'],
-  },
-  {
-    id: 'dog-hike-harness',
-    name: 'Summit Trek Harness',
-    species: 'dog',
-    category: 'harnesses',
-    price: 54.99,
-    badge: 'Best Seller',
-    description: 'Padded all-day harness designed for hikes, training, and everyday control.',
-    tags: ['featured', 'outdoor'],
-  },
-  {
-    id: 'dog-trail-leash',
-    name: 'Canyon Bungee Leash',
-    species: 'dog',
-    category: 'leashes',
-    price: 29.99,
-    badge: 'Trail Ready',
-    description: 'Shock-absorbing lead with soft grip handle and swivel hardware.',
-    tags: ['outdoor'],
-  },
-  {
-    id: 'dog-trail-kit',
-    name: 'Ridgeline Adventure Kit',
-    species: 'dog',
-    category: 'hiking-accessories',
-    price: 68.0,
-    badge: 'Bundle',
-    description: 'Bottle clip, treat pod, safety light, and collapsible bowl for the trail.',
-    tags: ['seasonal', 'featured'],
-    seasonalCollection: 'spring-trail-essentials',
-  },
-  {
-    id: 'dog-gps-tag',
-    name: 'Waypoint Smart Tag',
-    species: 'dog',
-    category: 'gadgets',
-    price: 34.0,
-    badge: 'New',
-    description: 'Compact tracking clip that attaches to collars and harnesses.',
-    tags: ['tech'],
-  },
-  {
-    id: 'dog-cloud-bed',
-    name: 'Cloud Nap Lounger',
-    species: 'dog',
-    category: 'beds',
-    price: 79.0,
-    badge: 'Calming',
-    description: 'Supportive plush bed with removable washable cover.',
-    tags: ['home'],
-  },
-  {
-    id: 'dog-training-pad-pro',
-    name: 'Stay-Dry Training Pads',
-    species: 'dog',
-    category: 'training-pads',
-    price: 22.0,
-    badge: 'Odor Control',
-    description: 'Leak-lock pads built for puppy training and apartment living.',
-    tags: ['home'],
-  },
-  {
-    id: 'cat-knit-wrap',
-    name: 'Cozy Cat Knit Wrap',
-    species: 'cat',
-    category: 'clothes',
-    price: 29.0,
-    badge: 'Soft Fit',
-    description: 'Stretch-knit layer for comfort, recovery, or chilly evenings.',
-    tags: ['home'],
-  },
-  {
-    id: 'cat-explore-harness',
-    name: 'Whisker Walk Harness',
-    species: 'cat',
-    category: 'harnesses',
-    price: 39.99,
-    badge: 'Escape Resistant',
-    description: 'Secure vest-style harness for safe outdoor cat adventures.',
-    tags: ['featured'],
-  },
-  {
-    id: 'cat-feather-toy-set',
-    name: 'Pounce Feather Set',
-    species: 'cat',
-    category: 'toys',
-    price: 18.0,
-    badge: 'Interactive',
-    description: 'Wand toy bundle with crinkle and feather attachments.',
-    tags: ['play'],
-  },
-  {
-    id: 'cat-fountain',
-    name: 'Ripple Smart Fountain',
-    species: 'cat',
-    category: 'gadgets',
-    price: 46.0,
-    badge: 'Filtered',
-    description: 'Quiet filtered fountain that encourages hydration throughout the day.',
-    tags: ['tech', 'home'],
-  },
-  {
-    id: 'cat-window-bed',
-    name: 'Sunbeam Window Bed',
-    species: 'cat',
-    category: 'beds',
-    price: 33.0,
-    badge: 'Window Perch',
-    description: 'Space-saving elevated bed for sunny naps and neighborhood watching.',
-    tags: ['home'],
-  },
-  {
-    id: 'cat-tree-loft',
-    name: 'Skyline Cat Tree',
-    species: 'cat',
-    category: 'trees',
-    price: 119.0,
-    badge: 'Tall Tower',
-    description: 'Multi-level cat tree with scratch posts, lookout perch, and hideaway cave.',
-    tags: ['featured', 'home'],
-  },
-  {
-    id: 'summer-cooling-mat',
-    name: 'Breeze Cooling Mat',
-    species: 'dog',
-    category: 'beds',
-    price: 31.0,
-    badge: 'Seasonal',
-    description: 'Pressure-activated cooling mat for warmer weather travel and naps.',
-    tags: ['seasonal'],
-    seasonalCollection: 'summer-cooling-kits',
-  },
-  {
-    id: 'cat-cooling-pad',
-    name: 'Cool Spot Lounge Pad',
-    species: 'cat',
-    category: 'beds',
-    price: 26.0,
-    badge: 'Seasonal',
-    description: 'Lightweight cool-touch pad sized for cats and small pets.',
-    tags: ['seasonal'],
-    seasonalCollection: 'summer-cooling-kits',
-  },
-];
+import {
+  fetchProducts,
+  fetchFeaturedProducts,
+} from '../api/catalogApi';
+
+export const PRODUCT_CATALOG = [];
 
 export function getProductsByCategory(speciesSlug, categorySlug) {
-  return PRODUCT_CATALOG.filter(
-    (product) => product.species === speciesSlug && product.category === categorySlug
-  );
+  return fetchProducts({ species: speciesSlug, categorySlug });
 }
 
 export function getProductsBySeasonalCollection(collectionSlug) {
-  return PRODUCT_CATALOG.filter((product) => product.seasonalCollection === collectionSlug);
+  return fetchProducts({ seasonalCollection: collectionSlug });
 }
 
 export function getFeaturedProducts(limit = 6) {
-  return PRODUCT_CATALOG.filter((product) => product.tags.includes('featured')).slice(0, limit);
+  return fetchFeaturedProducts(limit);
 }
