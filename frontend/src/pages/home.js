@@ -73,6 +73,7 @@ function calcTotal(base, addons) {
 }
 
 const LOGO_PATH = '/logo.png';
+const SHIPPING_COST = 0;
 
 export default function Home() {
   const [step, setStep] = useState(1);
@@ -87,7 +88,8 @@ export default function Home() {
     );
   };
 
-  const total = calcTotal(selectedBase, selectedAddons);
+  const subtotal = calcTotal(selectedBase, selectedAddons);
+  const total = subtotal + SHIPPING_COST;
   const freeCount = selectedBase ? Math.min(selectedAddons.length, selectedBase.freeSlots) : 0;
   const savings = selectedBase ? freeCount * selectedBase.addonValue : 0;
 
@@ -99,8 +101,6 @@ export default function Home() {
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", background: 'var(--cream)', minHeight: '100vh', color: 'var(--ink)' }}>
-      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -113,6 +113,12 @@ export default function Home() {
           --mid: #6E8890;
           --surface: #FFFCF4;
           --surface-soft: #F6F1E4;
+          --ink-strong: #396570;
+          --warm-strong: #C9712F;
+          --warm-soft: #FFECD9;
+          --warm-surface: #FFF1E4;
+          --warm-border: #F1C9A5;
+          --warm-empty: #D8A67A;
           --white: #FFFFFF;
         }
         body {
@@ -149,21 +155,21 @@ export default function Home() {
         .addon-chip.selected { border-color: var(--ink); background: var(--ink); color: white; }
         .pill { display: inline-flex; align-items: center; gap: 5px; background: var(--terracotta); color: var(--white); font-size: .7rem; font-weight: 600; letter-spacing: .06em; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; }
         .pill-outline { background: transparent; border: 1.5px solid currentColor; }
-        .pill-green { background: #FFECD9; color: #C9712F; }
+        .pill-green { background: var(--warm-soft); color: var(--warm-strong); }
         .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; transition: all .3s; }
         .step-dot.done { background: var(--ink); color: white; }
         .step-dot.active { background: var(--peach); color: var(--ink); }
         .step-dot.idle { background: var(--mist); color: var(--mid); }
         .btn-primary { background: var(--ink); color: white; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 1rem; padding: 15px 32px; cursor: pointer; transition: background .2s, transform .12s; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-primary:hover { background: #396570; transform: translateY(-1px); }
+        .btn-primary:hover { background: var(--ink-strong); transform: translateY(-1px); }
         .btn-primary:disabled { background: #ccc; cursor: not-allowed; transform: none; }
         .btn-lime { background: var(--terracotta); color: var(--white); border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1.05rem; padding: 16px 36px; cursor: pointer; transition: filter .2s, transform .12s; }
         .btn-lime:hover { filter: brightness(.92); transform: translateY(-1px); }
-        .btn-ghost { background: transparent; border: 1.5px solid #ddd; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: .9rem; color: var(--mid); padding: 10px 22px; cursor: pointer; transition: border-color .2s; }
+        .btn-ghost { background: transparent; border: 1.5px solid var(--mist); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: .9rem; color: var(--mid); padding: 10px 22px; cursor: pointer; transition: border-color .2s; }
         .btn-ghost:hover { border-color: var(--teal); color: var(--ink); }
         .price-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--mist); }
         .strikethrough { text-decoration: line-through; color: var(--mid); font-size: .85rem; }
-        .free-tag { color: #C9712F; font-weight: 700; font-size: .9rem; }
+        .free-tag { color: var(--warm-strong); font-weight: 700; font-size: .9rem; }
         .summary-card { background: var(--surface); border-radius: 20px; padding: 28px; border: 1.5px solid var(--mist); }
         .brand-logo { width: 54px; height: 54px; object-fit: contain; border-radius: 12px; background: var(--surface); border: 1px solid var(--mist); }
         .hero-logo { width: min(240px, 45vw); height: auto; display: block; margin-bottom: 20px; filter: drop-shadow(0 12px 22px rgba(74,124,138,.17)); }
@@ -214,7 +220,7 @@ export default function Home() {
           <h1 className="fade-up-2" style={{ fontFamily: "'Cormorant Garamond', serif", color: 'var(--ink)', fontSize: 'clamp(2.6rem, 6vw, 4.5rem)', fontWeight: 700, lineHeight: 1.05, marginBottom: 20 }}>
             Build the kit
             <br />
-            your dog deserves.
+            your dog or cat deserves.
           </h1>
           <p className="fade-up-3" style={{ color: 'var(--mid)', fontSize: '1.1rem', fontWeight: 400, lineHeight: 1.7, maxWidth: 600, marginBottom: 36 }}>
             Choose a harness or leash, then snap on the accessories you want. Every harness comes with{' '}
@@ -279,7 +285,7 @@ export default function Home() {
             <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 700, marginBottom: 6 }}>
               Start with your base
             </h2>
-            <p style={{ color: 'var(--mid)', marginBottom: 36, fontSize: '.95rem' }}>Harnesses include 2 clip-on accessories free. Leashes are mix-and-match at a flat add-on rate.</p>
+            <p style={{ color: 'var(--mid)', marginBottom: 36, fontSize: '.95rem' }}>Harnesses include 2 clip-on accessories free. Leashes are mix-and-match at a flat add-on rate, and shipping is included for every kit.</p>
 
             <div style={{ marginBottom: 40 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
@@ -293,10 +299,10 @@ export default function Home() {
                     <div style={{ fontSize: '2.4rem', marginBottom: 12 }}>{b.emoji}</div>
                     <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: 2 }}>{b.name}</div>
                     <div style={{ color: 'var(--mid)', fontSize: '.85rem', marginBottom: 12 }}>Size: {b.size}</div>
-                    <p style={{ color: '#555', fontSize: '.88rem', lineHeight: 1.5, marginBottom: 16 }}>{b.desc}</p>
+                    <p style={{ color: 'var(--mid)', fontSize: '.88rem', lineHeight: 1.5, marginBottom: 16 }}>{b.desc}</p>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
                       <span style={{ fontWeight: 800, fontSize: '1.4rem' }}>${b.price}</span>
-                      <span style={{ fontSize: '.8rem', color: '#C9712F', fontWeight: 600 }}>+ 2 accessories free</span>
+                      <span style={{ fontSize: '.8rem', color: 'var(--warm-strong)', fontWeight: 600 }}>+ 2 accessories free</span>
                     </div>
                   </div>
                 ))}
@@ -314,7 +320,7 @@ export default function Home() {
                     <div style={{ fontSize: '2.4rem', marginBottom: 12 }}>{b.emoji}</div>
                     <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: 2 }}>{b.name}</div>
                     <div style={{ color: 'var(--mid)', fontSize: '.85rem', marginBottom: 12 }}>Length: {b.size}</div>
-                    <p style={{ color: '#555', fontSize: '.88rem', lineHeight: 1.5, marginBottom: 16 }}>{b.desc}</p>
+                    <p style={{ color: 'var(--mid)', fontSize: '.88rem', lineHeight: 1.5, marginBottom: 16 }}>{b.desc}</p>
                     <div style={{ fontWeight: 800, fontSize: '1.4rem' }}>${b.price}</div>
                   </div>
                 ))}
@@ -335,13 +341,14 @@ export default function Home() {
                   Clip on your accessories
                 </h2>
                 {selectedBase.freeSlots > 0
-                  ? <p style={{ color: '#C9712F', fontWeight: 600, fontSize: '.95rem' }}>✓ First {selectedBase.freeSlots} accessories are FREE with your harness. Additional ones are $12.99 each.</p>
+                  ? <p style={{ color: 'var(--warm-strong)', fontWeight: 600, fontSize: '.95rem' }}>✓ First {selectedBase.freeSlots} accessories are FREE with your harness. Additional ones are $12.99 each.</p>
                   : <p style={{ color: 'var(--mid)', fontSize: '.95rem' }}>Each accessory clips onto your leash - $12.99 each.</p>}
               </div>
               <div style={{ background: 'var(--surface)', border: '1.5px solid var(--mist)', borderRadius: 14, padding: '14px 20px', minWidth: 200 }}>
                 <div style={{ fontSize: '.75rem', color: 'var(--mid)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.07em', marginBottom: 4 }}>Running Total</div>
                 <div style={{ fontWeight: 800, fontSize: '1.7rem' }}>${total.toFixed(2)}</div>
-                {savings > 0 && <div style={{ color: '#C9712F', fontSize: '.8rem', fontWeight: 600 }}>You save ${savings.toFixed(2)}</div>}
+                <div style={{ color: 'var(--mid)', fontSize: '.76rem' }}>Shipping included</div>
+                {savings > 0 && <div style={{ color: 'var(--warm-strong)', fontSize: '.8rem', fontWeight: 600 }}>You save ${savings.toFixed(2)}</div>}
               </div>
             </div>
 
@@ -353,12 +360,12 @@ export default function Home() {
                 return (
                   <div key={addon.id} className={`addon-chip ${isSelected ? 'selected' : ''}`} onClick={() => toggleAddon(addon)} style={{ flexDirection: 'column', alignItems: 'flex-start', padding: '16px', position: 'relative', animation: `popIn .3s ${i * 0.04}s both` }}>
                     {isFree && (
-                      <div style={{ position: 'absolute', top: 10, right: 10, background: '#C9712F', color: 'white', fontSize: '.6rem', fontWeight: 700, padding: '2px 7px', borderRadius: 20, letterSpacing: '.05em' }}>FREE</div>
+                      <div style={{ position: 'absolute', top: 10, right: 10, background: 'var(--warm-strong)', color: 'white', fontSize: '.6rem', fontWeight: 700, padding: '2px 7px', borderRadius: 20, letterSpacing: '.05em' }}>FREE</div>
                     )}
                     <span style={{ fontSize: '1.8rem', marginBottom: 8 }}>{addon.emoji}</span>
                     <div style={{ fontWeight: 700, fontSize: '.9rem', marginBottom: 2, color: isSelected ? 'white' : 'var(--ink)' }}>{addon.name}</div>
                     <div style={{ fontSize: '.78rem', color: isSelected ? 'rgba(255,255,255,.6)' : 'var(--mid)', marginBottom: 8 }}>{addon.desc}</div>
-                    <div style={{ fontWeight: 700, fontSize: '.9rem', color: isFree ? '#C9712F' : isSelected ? 'white' : 'var(--ink)' }}>
+                    <div style={{ fontWeight: 700, fontSize: '.9rem', color: isFree ? 'var(--warm-strong)' : isSelected ? 'white' : 'var(--ink)' }}>
                       {isFree
                         ? (
                           <>
@@ -374,25 +381,25 @@ export default function Home() {
             </div>
 
             {selectedBase.freeSlots > 0 && (
-              <div style={{ background: '#FFF1E4', border: '1.5px solid #F1C9A5', borderRadius: 14, padding: '16px 20px', marginBottom: 28, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '.85rem', fontWeight: 700, color: '#C9712F' }}>FREE SLOTS</span>
-                {[0, 1].map((i) => {
+              <div style={{ background: 'var(--warm-surface)', border: '1.5px solid var(--warm-border)', borderRadius: 14, padding: '16px 20px', marginBottom: 28, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '.85rem', fontWeight: 700, color: 'var(--warm-strong)' }}>FREE SLOTS</span>
+                {Array.from({ length: selectedBase.freeSlots }).map((_, i) => {
                   const a = selectedAddons[i];
                   return (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, background: a ? '#FFE5CE' : 'white', border: `1.5px dashed ${a ? '#E89B5F' : '#F1C9A5'}`, borderRadius: 10, padding: '6px 14px', fontSize: '.85rem' }}>
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, background: a ? 'var(--warm-soft)' : 'white', border: `1.5px dashed ${a ? 'var(--terracotta)' : 'var(--warm-border)'}`, borderRadius: 10, padding: '6px 14px', fontSize: '.85rem' }}>
                       {a
                         ? (
                           <>
                             <span>{a.emoji}</span>
-                            <span style={{ fontWeight: 600, color: '#C9712F' }}>{a.name}</span>
+                            <span style={{ fontWeight: 600, color: 'var(--warm-strong)' }}>{a.name}</span>
                           </>
                         )
-                        : <span style={{ color: '#D8A67A' }}>Empty slot {i + 1}</span>}
+                        : <span style={{ color: 'var(--warm-empty)' }}>Empty slot {i + 1}</span>}
                     </div>
                   );
                 })}
-                {selectedAddons.length > 2 && (
-                  <span style={{ fontSize: '.8rem', color: '#C9712F', fontStyle: 'italic' }}>+{selectedAddons.length - 2} more at $12.99 each</span>
+                {selectedAddons.length > selectedBase.freeSlots && (
+                  <span style={{ fontSize: '.8rem', color: 'var(--warm-strong)', fontStyle: 'italic' }}>+{selectedAddons.length - selectedBase.freeSlots} more at $12.99 each</span>
                 )}
               </div>
             )}
@@ -452,14 +459,22 @@ export default function Home() {
                 )}
 
                 {savings > 0 && (
-                  <div style={{ background: '#FFF1E4', borderRadius: 10, padding: '12px 16px', margin: '16px 0', display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: '#C9712F', fontWeight: 600, fontSize: '.9rem' }}>🎉 You saved</span>
-                    <span style={{ color: '#C9712F', fontWeight: 800 }}>-${savings.toFixed(2)}</span>
+                  <div style={{ background: 'var(--warm-surface)', borderRadius: 10, padding: '12px 16px', margin: '16px 0', display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--warm-strong)', fontWeight: 600, fontSize: '.9rem' }}>🎉 You saved</span>
+                    <span style={{ color: 'var(--warm-strong)', fontWeight: 800 }}>-${savings.toFixed(2)}</span>
                   </div>
                 )}
 
+                <div className="price-row">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ fontSize: '1.2rem' }}>🚚</span>
+                    <span style={{ fontWeight: 700 }}>Shipping</span>
+                  </div>
+                  <span className="free-tag">Included</span>
+                </div>
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '2px solid var(--ink)', marginTop: 4 }}>
-                  <span style={{ fontWeight: 800, fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '.06em' }}>Total</span>
+                  <span style={{ fontWeight: 800, fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '.06em' }}>Total (incl. shipping)</span>
                   <span style={{ fontWeight: 800, fontSize: '1.6rem' }}>${total.toFixed(2)}</span>
                 </div>
               </div>
@@ -490,12 +505,13 @@ export default function Home() {
                   <button className="btn-lime" style={{ width: '100%', textAlign: 'center' }}>
                     Add to Cart - ${total.toFixed(2)}
                   </button>
+                  <p style={{ color: 'var(--mid)', fontSize: '.78rem', textAlign: 'center' }}>Shipping already included in your total.</p>
                   <button className="btn-ghost" style={{ width: '100%' }} onClick={() => setStep(2)}>← Edit Add-Ons</button>
                   <button className="btn-ghost" style={{ width: '100%', borderColor: 'transparent', color: 'var(--mid)', fontSize: '.82rem' }} onClick={reset}>Start over</button>
                 </div>
 
                 <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {[['🚚', 'Free shipping on orders $40+'], ['🔄', '30-day returns - no questions'], ['✅', 'Vet-approved materials']].map(([ico, txt]) => (
+                  {[['🚚', 'Shipping included on every kit'], ['🔄', '30-day returns - no questions'], ['✅', 'Vet-approved materials']].map(([ico, txt]) => (
                     <div key={txt} style={{ display: 'flex', gap: 8, alignItems: 'center', color: 'var(--mid)', fontSize: '.82rem' }}>
                       <span>{ico}</span>
                       {txt}
