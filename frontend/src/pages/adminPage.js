@@ -76,6 +76,7 @@ export default function AdminPage() {
 
   // ── Categories ───────────────────────────────────────────────────────────
   const [categories, setCategories] = useState([]);
+  const [catsLoading, setCatsLoading] = useState(true);
   const [catsMsg, setCatsMsg] = useState('');
   const [catsErr, setCatsErr] = useState('');
   const [categorySearch, setCategorySearch] = useState('');

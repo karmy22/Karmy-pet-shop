@@ -29,6 +29,10 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.get('/', (request, response) => {
+	response.json({ status: 'Karmy Pet Shop API is running', docs: '/api/health' });
+});
+
 app.get('/api/health', (request, response) => {
 	response.json({
 		ok: true,

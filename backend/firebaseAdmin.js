@@ -29,6 +29,5 @@ const firebaseProjectId = serviceAccount.project_id || process.env.FIREBASE_PROJ
 module.exports = {
   admin,
   auth: admin.auth(),
-  firestore: admin.firestore(),
   firebaseProjectId,
 };

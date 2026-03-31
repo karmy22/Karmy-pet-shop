@@ -86,14 +86,6 @@ export function toggleProductVisibility(id, isActive, token) {
   });
 }
 
-export function toggleCategoryVisibility(id, isActive, token) {
-  return apiRequest(`/api/admin/categories/${id}/visibility`, {
-    method: 'PATCH',
-    headers: withAuthHeaders(token),
-    body: JSON.stringify({ isActive }),
-  });
-}
-
 export function listOrders(token) {
   return apiRequest('/api/admin/orders', {
     method: 'GET',

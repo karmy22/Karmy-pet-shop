@@ -2,12 +2,40 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Start Backend",
+            "type": "shell",
+            "command": "npm.cmd",
+            "args": ["start"],
+            "options": {
+                "cwd": "${workspaceFolder}/backend"
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "custom",
+                "pattern": {
+                    "regexp": ".",
+                    "file": 1,
+                    "location": 2,
+                    "message": 3
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": "Backend server listening"
+                }
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "label": "Backend :5000",
+                "clear": true
+            }
+        },
+        {
             "label": "Start Frontend",
             "type": "shell",
             "command": "npm.cmd",
-            "args": [
-                "start"
-            ],
+            "args": ["start"],
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
             },
@@ -29,8 +57,19 @@
             "presentation": {
                 "reveal": "always",
                 "panel": "dedicated",
+                "label": "Frontend :3000",
                 "clear": true
             }
+        },
+        {
+            "label": "Start Full Stack",
+            "dependsOn": ["Start Backend", "Start Frontend"],
+            "dependsOrder": "parallel",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
         }
     ]
 }
