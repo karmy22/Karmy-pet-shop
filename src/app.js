@@ -36,7 +36,7 @@ function App() {
     <BrowserRouter>
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<div> Home </div>} />
           <Route path="/build-your-own-kit" element={<BYOKitPage />} />
           <Route path="/shop/:speciesSlug/:categorySlug" element={<CategoryPage />} />
           <Route path="/seasonal/:collectionSlug" element={<SeasonalPage />} />
