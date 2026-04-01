@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './app';
 import './styles.css';
 import './revamp.css';
+import AppWithAuth from './App.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <AppWithAuth />
   </React.StrictMode>
 );

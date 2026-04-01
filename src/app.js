@@ -10,7 +10,7 @@ import {
   notFoundSections,
 } from './data/siteContent';
 
-const Home = lazy(() => import('./pages/home'));
+const Home = lazy(() => import('./pages/Home'));
 const BYOKitPage = lazy(() => import('./pages/byoKitPage'));
 const CategoryPage = lazy(() => import('./pages/categoryPage'));
 const SeasonalPage = lazy(() => import('./pages/seasonalPage'));
