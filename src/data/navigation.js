@@ -1,0 +1,144 @@
+export const STORE_SPECIES = [
+  {
+    slug: 'dog',
+    label: 'Shop Dogs',
+    visible: true,
+    shortLabel: 'Dogs',
+    description: 'Adventure-ready essentials, apparel, and everyday comfort for dogs.',
+    categories: [
+      { slug: 'clothes', label: 'Clothes', description: 'Jackets, sweaters, rainwear, and cozy layers.', visible: true },
+      { slug: 'harnesses', label: 'Harnesses', description: 'Daily walk harnesses and trail-ready fits.', visible: true },
+      { slug: 'leashes', label: 'Leashes', description: 'Training leads, bungee leashes, and hands-free styles.', visible: true },
+      { slug: 'toys', label: 'Toys', description: 'Chew toys, fetch toys, enrichment, and tug play.', visible: true },
+      { slug: 'hiking-accessories', label: 'Hiking Accessories', description: 'Trail gear, water carry, safety lights, and outdoor add-ons.', visible: true },
+      { slug: 'gadgets', label: 'Gadgets', description: 'Trackers, lights, travel gear, and smart walk tools.', visible: true },
+      { slug: 'beds', label: 'Beds', description: 'Orthopedic loungers, travel mats, and calming beds.', visible: true },
+      { slug: 'training-pads', label: 'Training Pads', description: 'Potty training, home pads, and odor-control essentials.', visible: true },
+    ],
+  },
+  {
+    slug: 'cat',
+    label: 'Shop Cats',
+    visible: true,
+    shortLabel: 'Cats',
+    description: 'Indoor comfort, climbing gear, play, and everyday cat essentials.',
+    categories: [
+      { slug: 'clothes', label: 'Clothes', description: 'Soft recovery wear, knits, and cold-weather layers.', visible: true },
+      { slug: 'harnesses', label: 'Harnesses', description: 'Secure cat harnesses for safe outdoor exploration.', visible: true },
+      { slug: 'leashes', label: 'Leashes', description: 'Lightweight leads for cat walks and supervised outdoor time.', visible: true },
+      { slug: 'toys', label: 'Toys', description: 'Wands, kickers, puzzle toys, and chase favorites.', visible: true },
+      { slug: 'gadgets', label: 'Gadgets', description: 'Fountains, trackers, feeders, and home-tech essentials.', visible: true },
+      { slug: 'beds', label: 'Beds', description: 'Cave beds, window perches, and nap-friendly nests.', visible: true },
+      { slug: 'trees', label: 'Trees', description: 'Cat trees, scratch towers, and climbing furniture.', visible: true },
+      { slug: 'training-pads', label: 'Training Pads', description: 'Litter-adjacent cleanup, liners, and home hygiene helpers.', visible: true },
+    ],
+  },
+];
+
+export const SEASONAL_COLLECTIONS = [
+  {
+    slug: 'winter-comfort-essentials',
+    label: 'Winter Comfort Essentials',
+    description: 'Warm layers, insulated gear, and cozy comfort picks for colder days.',
+    species: ['dog', 'cat'],
+    seasonKey: 'winter',
+    isSeasonal: true,
+    visible: true,
+  },
+  {
+    slug: 'spring-trail-essentials',
+    label: 'Spring Trail Essentials',
+    description: 'Fresh-air gear for hikes, park days, and wet-weather outings.',
+    species: ['dog', 'cat'],
+    seasonKey: 'spring',
+    isSeasonal: true,
+    visible: true,
+  },
+  {
+    slug: 'summer-cooling-kits',
+    label: 'Summer Cooling Kits',
+    description: 'Cooling mats, hydration extras, breathable wear, and travel comfort.',
+    species: ['dog', 'cat'],
+    seasonKey: 'summer',
+    isSeasonal: true,
+    visible: true,
+  },
+  {
+    slug: 'autumn-cozy-essentials',
+    label: 'Autumn Cozy Essentials',
+    description: 'Layered apparel and outdoor-ready picks for crisp autumn weather.',
+    species: ['dog', 'cat'],
+    seasonKey: 'autumn',
+    isSeasonal: true,
+    visible: true,
+  },
+  {
+    slug: 'bird',
+    visible: false,
+    label: 'Shop Birds',
+    shortLabel: 'Birds',
+    description: 'Perches, toys, cages, and everyday essentials for birds.',
+    categories: [
+      { slug: 'toys', label: 'Toys', description: 'Foraging toys, swings, and enrichment.', visible: true },
+      { slug: 'accessories', label: 'Accessories', description: 'Perches, feeders, and bird-safe gear.', visible: true },
+    ],
+  },
+  {
+    slug: 'fish',
+    visible: false,
+    label: 'Shop Fish',
+    shortLabel: 'Fish',
+    description: 'Tanks, décor, and care essentials for freshwater and saltwater fish.',
+    categories: [
+      { slug: 'accessories', label: 'Accessories', description: 'Tank décor, plants, and care tools.', visible: true },
+      { slug: 'toys', label: 'Enrichment', description: 'Hideaways and habitat enrichment.', visible: true },
+    ],
+  },
+  {
+    slug: 'small-animals',
+    visible: false,
+    label: 'Shop Small Animals',
+    shortLabel: 'Small Animals',
+    description: 'Bedding, hideouts, and play gear for rabbits, guinea pigs, hamsters and more.',
+    categories: [
+      { slug: 'beds', label: 'Beds & Hideouts', description: 'Cozy dens, tunnels, and sleeping spots.', visible: true },
+      { slug: 'toys', label: 'Toys', description: 'Chew toys, tunnels, and enrichment.', visible: true },
+    ],
+  },
+  {
+    slug: 'reptile',
+    visible: false,
+    label: 'Shop Reptiles',
+    shortLabel: 'Reptiles',
+    description: 'Habitat, lighting, and care essentials for reptiles.',
+    categories: [
+      { slug: 'accessories', label: 'Habitat & Accessories', description: 'Hides, substrate, and décor.', visible: true },
+      { slug: 'gadgets', label: 'Lighting & Tech', description: 'Thermostats, UV lights, and smart habitat tools.', visible: true },
+    ],
+  },
+];
+
+export function getSpeciesConfig(speciesSlug) {
+  return STORE_SPECIES.find((species) => species.slug === speciesSlug);
+}
+
+export function getVisibleSpecies() {
+  return STORE_SPECIES.filter((species) => species.visible !== false);
+}
+
+export function getVisibleCategories(speciesSlug) {
+  const species = getSpeciesConfig(speciesSlug);
+  return species ? species.categories.filter((category) => category.visible) : [];
+}
+
+export function getCategoryConfig(speciesSlug, categorySlug) {
+  return getVisibleCategories(speciesSlug).find((category) => category.slug === categorySlug);
+}
+
+export function getVisibleSeasonalCollections() {
+  return SEASONAL_COLLECTIONS.filter((collection) => collection.visible);
+}
+
+export function getSeasonalCollection(collectionSlug) {
+  return SEASONAL_COLLECTIONS.find((collection) => collection.slug === collectionSlug);
+}
