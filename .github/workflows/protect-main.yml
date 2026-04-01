@@ -1,4 +1,4 @@
-name: Protect Main Branch
+name: Set Main Branch Rulesets
 
 on:
   push:
@@ -10,28 +10,64 @@ permissions:
   administration: write
 
 jobs:
-  protect:
+  set-rulesets:
     runs-on: ubuntu-latest
     steps:
-      - name: Apply branch protection rules to main
+      - name: Apply rulesets to main branch
         uses: actions/github-script@v7
         with:
           script: |
-            await github.rest.repos.updateBranchProtection({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              branch: 'main',
-              required_status_checks: null,
-              enforce_admins: true,
-              required_pull_request_reviews: {
-                dismiss_stale_reviews: true,
-                require_code_owner_reviews: true,
-                required_approving_review_count: 1
-              },
-              restrictions: null,
-              allow_force_pushes: false,
-              allow_deletions: false,
-              block_creations: false,
-              required_conversation_resolution: true
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const rulesetName = 'main-branch-protection';
+
+            // Check for existing rulesets
+            const { data: existingRulesets } = await github.rest.repos.getRepoRulesets({
+              owner,
+              repo,
             });
-            console.log('Branch protection applied to main.');
+
+            const existing = existingRulesets.find(r => r.name === rulesetName);
+
+            const rulesetConfig = {
+              owner,
+              repo,
+              name: rulesetName,
+              target: 'branch',
+              enforcement: 'active',
+              conditions: {
+                ref_name: {
+                  include: ['refs/heads/main'],
+                  exclude: []
+                }
+              },
+              bypass_actors: [],
+              rules: [
+                {
+                  type: 'pull_request',
+                  parameters: {
+                    dismiss_stale_reviews_on_push: true,
+                    require_code_owner_review: true,
+                    required_approving_review_count: 1,
+                    required_review_thread_resolution: true
+                  }
+                },
+                {
+                  type: 'non_fast_forward'
+                },
+                {
+                  type: 'deletion'
+                }
+              ]
+            };
+
+            if (existing) {
+              await github.rest.repos.updateRepoRuleset({
+                ...rulesetConfig,
+                ruleset_id: existing.id,
+              });
+              console.log(`Ruleset '${rulesetName}' updated successfully.`);
+            } else {
+              await github.rest.repos.createRepoRuleset(rulesetConfig);
+              console.log(`Ruleset '${rulesetName}' created successfully.`);
+            }
