@@ -4,6 +4,49 @@ import AccountShell from '../components/accountShell';
 import { listMyOrders } from '../api/orderApi';
 import { useAuth } from '../context/authContext';
 
+const accountSections = [
+  {
+    title: 'My Orders',
+    body: 'View recent purchases, order details, and current order status.',
+    to: '/account/orders',
+    action: 'View orders',
+  },
+  {
+    title: 'My Profile',
+    body: 'Update your name, email, password access, and saved account details.',
+    to: '/account/profile',
+    action: 'Edit profile',
+  },
+  {
+    title: 'My Addresses',
+    body: 'Save shipping details for a smoother and more accurate checkout.',
+    to: '/account/addresses',
+    action: 'Manage addresses',
+  },
+];
+
+const perkSections = [
+  {
+    title: 'Loyalty & Rewards',
+    body: 'Check reward updates and prepare for future customer perks.',
+    to: '/account/rewards',
+    action: 'View rewards',
+  },
+  {
+    title: 'Pet Care Guides',
+    body: 'Read simple product tips for sizing, walks, and everyday essentials.',
+    to: '/account/pet-care-guides',
+    action: 'Read guides',
+  },
+];
+
+const helpSections = [
+  { title: 'FAQ', body: 'Find answers about orders, shipping, returns, and accounts.', to: '/faq' },
+  { title: 'Contact Us', body: 'Get help from customer support for account or order questions.', to: '/contact-us' },
+  { title: 'Shipping Policy', body: 'Review processing, delivery, and address guidance.', to: '/shipping-policy' },
+  { title: 'Returns & Refunds', body: 'Learn how return requests and refund reviews are handled.', to: '/returns-refunds' },
+];
+
 export default function AccountPage() {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
@@ -50,8 +93,8 @@ export default function AccountPage() {
 
   return (
     <AccountShell
-      title="My account"
-      subtitle="Track your recent purchases, jump to your profile, and manage your Karmy access in one place."
+      title="My Account"
+      subtitle="Welcome back to Karmy's Pet Shop. Manage orders, profile details, saved addresses, rewards, and customer support in one secure place."
       activeTab="overview"
     >
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 18 }}>
@@ -60,6 +103,7 @@ export default function AccountPage() {
           label="Latest status"
           value={snapshot.latestOrder ? capitalize(snapshot.latestOrder.status) : 'No orders yet'}
         />
+        <InfoCard label="Account access" value="Signed in" />
       </div>
 
       <section style={panelStyle}>
@@ -82,7 +126,28 @@ export default function AccountPage() {
           </div>
         )}
       </section>
+
+      <DashboardSection title="Account sections" items={accountSections} />
+      <DashboardSection title="Member perks" items={perkSections} />
+      <DashboardSection title="Need help?" items={helpSections} compact />
     </AccountShell>
+  );
+}
+
+function DashboardSection({ title, items, compact = false }) {
+  return (
+    <section style={{ marginTop: 18 }}>
+      <h2 style={panelTitleStyle}>{title}</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${compact ? 190 : 240}px, 1fr))`, gap: 14 }}>
+        {items.map((item) => (
+          <Link key={item.title} to={item.to} style={cardLinkStyle}>
+            <h3 style={{ margin: '0 0 8px', fontSize: '1rem' }}>{item.title}</h3>
+            <p style={{ ...mutedStyle, lineHeight: 1.6 }}>{item.body}</p>
+            <span style={smallActionStyle}>{item.action || 'Open page'}</span>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -126,6 +191,14 @@ const panelStyle = {
   boxShadow: '0 14px 30px rgba(36,58,68,.08)',
 };
 
+const cardLinkStyle = {
+  ...panelStyle,
+  display: 'grid',
+  gap: 8,
+  textDecoration: 'none',
+  color: 'var(--ink)',
+};
+
 const panelTitleStyle = {
   margin: '0 0 12px',
   fontSize: '1.05rem',
@@ -146,4 +219,11 @@ const linkButtonStyle = {
   padding: '8px 12px',
   fontSize: '.84rem',
   fontWeight: 700,
+};
+
+const smallActionStyle = {
+  marginTop: 4,
+  color: 'var(--ink)',
+  fontSize: '.8rem',
+  fontWeight: 800,
 };
