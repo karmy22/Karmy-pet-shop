@@ -15,23 +15,27 @@ export const aboutSections = [
 
 export const faqSections = [
   {
-    heading: 'Can seasonal pages be hidden?',
-    body: 'Yes. Each seasonal collection has a visible flag in the navigation data, so you can switch collections on or off without changing the page components.',
+    heading: 'How do I track an order?',
+    body: 'Sign in to your account and open My Orders. Your completed orders and order status updates will appear there when they are connected to your account.',
   },
   {
-    heading: 'Are dog and cat menus separate?',
-    body: 'Yes. Categories are defined per species so you can show different assortments for dogs and cats while keeping the same overall storefront layout.',
+    heading: 'Can I save my shipping address?',
+    body: 'Yes. Use My Addresses inside your account to save your preferred shipping details for a smoother checkout experience.',
   },
   {
     heading: 'Is the build-your-own-kit flow still available?',
     body: 'Yes. The custom harness and leash builder remains on the site and is available from the main navigation as Build Your Kit.',
+  },
+  {
+    heading: 'Where can I get help?',
+    body: 'Use the Contact Us page for order, product, account, shipping, or return support.',
   },
 ];
 
 export const contactSections = [
   {
     heading: 'Customer support',
-    body: 'Need help with an order or product? Reach out to our support team and we will get back to you as quickly as possible.',
+    body: 'Need help with an order, product, or account question? Reach out to our support team and we will get back to you as quickly as possible.',
   },
   {
     heading: 'Email',
@@ -39,7 +43,7 @@ export const contactSections = [
   },
   {
     heading: 'Business hours',
-    body: 'Monday to Friday, 9:00 AM - 6:00 PM',
+    body: 'Monday to Friday, 9:00 AM to 6:00 PM.',
   },
 ];
 
@@ -55,6 +59,44 @@ export const aboutUsSections = [
   {
     heading: 'How we grow',
     body: 'Our catalog and navigation are designed to scale so new categories, seasonal collections, and features can be added without major redesigns.',
+  },
+];
+
+export const shippingSections = [
+  {
+    heading: 'Processing times',
+    body: 'Orders are reviewed and prepared before shipment. Processing times may vary by item, supplier, and seasonal order volume.',
+  },
+  {
+    heading: 'Delivery updates',
+    body: 'When tracking is available, customers should use their order details to review the latest delivery status. Delivery estimates are not guarantees and may change after shipment.',
+  },
+  {
+    heading: 'Address accuracy',
+    body: 'Customers are responsible for entering a complete and accurate shipping address. Saved addresses can be managed from the My Addresses page.',
+  },
+  {
+    heading: 'Shipping support',
+    body: 'For questions about an order shipment, contact support with your order number and the email used at checkout.',
+  },
+];
+
+export const returnsSections = [
+  {
+    heading: 'Return requests',
+    body: 'Contact support before sending anything back. Return eligibility can depend on the item type, condition, timing, and supplier requirements.',
+  },
+  {
+    heading: 'Refund reviews',
+    body: 'Refunds are reviewed after the return or order issue is checked. Approved refunds are returned to the original payment method when possible.',
+  },
+  {
+    heading: 'Non-returnable items',
+    body: 'Some products may not be eligible for return once opened, used, customized, or marked final sale. Product condition matters.',
+  },
+  {
+    heading: 'Order issue support',
+    body: 'For damaged, missing, or incorrect items, contact support with your order number and clear details so the issue can be reviewed.',
   },
 ];
 
