@@ -8,6 +8,8 @@ import {
   contactSections,
   faqSections,
   notFoundSections,
+  returnsSections,
+  shippingSections,
 } from './data/siteContent';
 
 const Home = lazy(() => import('./pages/home'));
@@ -20,6 +22,9 @@ const CartPage = lazy(() => import('./pages/cartPage'));
 const AccountPage = lazy(() => import('./pages/accountPage'));
 const AccountOrdersPage = lazy(() => import('./pages/accountOrdersPage'));
 const AccountProfilePage = lazy(() => import('./pages/accountProfilePage'));
+const AccountAddressesPage = lazy(() => import('./pages/accountAddressesPage'));
+const AccountRewardsPage = lazy(() => import('./pages/accountRewardsPage'));
+const AccountPetCareGuidesPage = lazy(() => import('./pages/accountPetCareGuidesPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/forgotPasswordPage'));
 const AdminPage = lazy(() => import('./pages/adminPage'));
 
@@ -65,7 +70,7 @@ function App() {
             element={(
               <InfoPage
                 title="Frequently Asked Questions"
-                intro="This first storefront version focuses on structure: category navigation, seasonal visibility, and a reusable shopping shell that can keep expanding."
+                intro="Find quick answers about products, orders, shipping, returns, and account support."
                 sections={faqSections}
               />
             )}
@@ -81,12 +86,22 @@ function App() {
             )}
           />
           <Route
-            path="*"
+            path="/shipping-policy"
             element={(
               <InfoPage
-                title="Page not found"
-                intro="That page is not available yet. Use the main store navigation to jump back into the active catalog sections."
-                sections={notFoundSections}
+                title="Shipping Policy"
+                intro="Review processing times, delivery expectations, and shipping support before placing an order."
+                sections={shippingSections}
+              />
+            )}
+          />
+          <Route
+            path="/returns-refunds"
+            element={(
+              <InfoPage
+                title="Returns & Refunds"
+                intro="Learn how return requests, refund reviews, and order issue support are handled."
+                sections={returnsSections}
               />
             )}
           />
@@ -126,11 +141,45 @@ function App() {
             )}
           />
           <Route
+            path="/account/addresses"
+            element={(
+              <RequireAuth>
+                <AccountAddressesPage />
+              </RequireAuth>
+            )}
+          />
+          <Route
+            path="/account/rewards"
+            element={(
+              <RequireAuth>
+                <AccountRewardsPage />
+              </RequireAuth>
+            )}
+          />
+          <Route
+            path="/account/pet-care-guides"
+            element={(
+              <RequireAuth>
+                <AccountPetCareGuidesPage />
+              </RequireAuth>
+            )}
+          />
+          <Route
             path="/admin"
             element={(
               <RequireAdmin>
                 <AdminPage />
               </RequireAdmin>
+            )}
+          />
+          <Route
+            path="*"
+            element={(
+              <InfoPage
+                title="Page not found"
+                intro="That page is not available yet. Use the main store navigation to jump back into the active catalog sections."
+                sections={notFoundSections}
+              />
             )}
           />
         </Routes>
